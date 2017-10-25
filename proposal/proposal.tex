@@ -22,10 +22,10 @@
 	\end{center}
 	
 	\section{Introduction}
-	Artificial Intelligence is becoming instrumental in a variety of applications. Games serve as a good breeding ground for trying and testing these algorithms in a sandbox with simpler constraints in comparison to real life. In this project, we aim to solve the classical Japanese game of Sokoban, literally referring to a warehouse keeper, created by Hiroyuki Imabayashi and a cult classic.
+	Artificial Intelligence is becoming instrumental in a variety of applications. Games serve as a good breeding ground for trying and testing these algorithms in a sandbox with simpler constraints in comparison to real life. In this project, we aim to solve the classical Japanese game of Sokoban using various algorithms and heuristics and compare their performances through standard metrics.  
 	
 	\section{Task Definition}
-	Sokoban is a transportation puzzle where the playing arena is composed of a grid of squares. Some of the squares are marked as crates that the player has to push to a storage location in the warehouse. Some of the squares are marked as walls which acts as constraints that the player as well as the creates cannot enter. \\
+	Sokoban, literally referring to a warehouse keeper, was created by Hiroyuki Imabayashi and is a cult classic. This game transportation puzzle where the playing arena is composed of a grid of squares. Some of the squares are marked as crates that the player has to push to a storage location in the warehouse. Some of the squares are marked as walls which acts as constraints that the player as well as the creates cannot enter. \\
 	\\
 	The initial state consists of the player at a certain x,y location on the grid and certain locations marked as crates(or boxes) and target stores. The player can move horizontally or vertically (four directions - Up, Down, Left and Right). The player can push at most a single box (cannot push two boxes together) into an empty space that is not a wall or another box. The player cannot pull the boxes. There are equal number of crates and target locations and the player succeeds once all crates are in target storage locations. The game fails if a crate gets locked up in a corner or with another crate such that the player cannot push the crate any more.
 	
