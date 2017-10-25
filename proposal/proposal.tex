@@ -5,7 +5,7 @@
 \usepackage{graphicx}
 \usepackage{hyperref}
 \usepackage{subcaption}
-\usepackage{url}
+
 
 % Line break with additional spacing. Default is .75 line-height extra spacing
 % Extra space is put in to allow line breaks immediately after \item
@@ -14,49 +14,53 @@
 \parindent 0pt
 
 \begin{document}
-
-\begin{center}
-\LARGE{\textbf{Solving Sokoban}}\\
-\Large{\textbf{CS 221 Project Proposal}}\\
-\Large{Anand Venkatesan, Atishay Jain, Rakesh Grewal }
-\end{center}
-
-\section{Introduction}
-Artificial Intelligence is becoming instrumental in a variety of applications. Games serve as a good breeding ground for trying and testing these algorithms in a sandbox with simpler constraints in comparison to real life. In this project, we aim to solve the classical Japanese game of Sokoban, literally referring to a warehouse keeper, created by Hiroyuki Imabayashi and a cult classic.
-
-\section{Task Definition}
-Sokoban is a transportation puzzle where the playing arena is composed of a grid of squares. Some of the squares are marked as crates that the player has to push to a storage location in the warehouse. Some of the squares are marked as walls which acts as constraints that the player as well as the creates cannot enter. \\
-\\
-The initial state consists of the player at a certain x,y location on the grid and certain locations marked as crates(or boxes) and target stores. The player can move horizontally or vertically (four directions - Up, Down, Left and Right). The player can push at most a single box (cannot push two boxes together) into an empty space that is not a wall or another box. The player cannot pull the boxes. There are equal number of crates and target locations and the player succeeds once all crates are in target storage locations. The game fails if a crate gets locked up in a corner or with another crate such that the player cannot push the crate any more.
-
-\section{Scientific Value \& Scope}
-Solving Sokoban is a NP-Hard problem, PSPACE-Complete\cite{1} and it has been an active area of research. The branching factor of the Sokoban game is very high and with each iteration, it has an exponentially growing number of pushes and moves. Therefore it needs proper heuristics that can help in eliminating redundant search states. The backtracking algorithm limitations are evident when the size of the puzzle is huge. \\
-Solving Sokoban has useful applications in robotics, especially motion planning. The robotic movement in a constrained space can be simplified to Sokoban.
-
-\section{Literature Review}
-
-\section{Approach}
-We will be comparing the behavior and performance of various search algorithms that can be applied to this problem.
-\subsection{Modeling}
-Sokoban is a deterministic search problem with a defined start and end state. The formal definition of the model is a follows:
-\begin{enumerate}
-  \item States: The states of Sokoban consist of the location of the crates and the player in the grid.
-  \item Start State: The start state is hard coded in each level as provided in the original game.
-  \item End State: This state has all the crates in target storage locations. The player can be anywhere on the board.
-  \item Actions: The actions can be ``Left'', ``Right'', ``Up'' or ``Down'' in a way that satisfies the constraints.
-  \item Successor and Cost: Every state transition has a constant cost and the end state has a cost of $0$. The successor to a state will have the player moving to a new location on the board and the crates might been pushed via the movement.
-\end{enumerate}
-\subsection{Problem Solving}
-In this project, Sokoban is solved by various search algorithms and their performances are compared. Initially the baseline approach for this problem is considered as the backtracking algorithm where we explore all the states and corresponding transitions to get a list of all possible solutions and then we pick the best one. The other approaches that provide better solution to this problem that will be explored include depth first search(DFS), breadth first search(BFS), uniform cost search(UCS) and A* approach. We will be trying A* with multiple heuristics like the Euclidean and Manhattan distances between the crates and the target locations. We would also try to explore depth first search with iterative deepening(DFS-ID), A* with iterative deepening(A*-ID) etc.
-
-
-\subsection{Evaluation Metrics}
-The performance of the Sokoban solvers can be compared using the standard performance indices like the number of states explored, the time taken to solve, the number of steps taken in the solution discovered.
-\section{Appendix}
-
-
-\begin{thebibliography}{1}
-\bibitem{1} Dor, Dorit, and Uri Zwick. "SOKOBAN and other motion planning problems." Computational Geometry 13.4 (1999): 215-228.
-\end{thebibliography}
-
+	
+	\begin{center}
+		\LARGE{\textbf{Solving Sokoban}}\\
+		\Large{\textbf{CS 221 Project Proposal}}\\
+		\Large{Anand Venkatesan, Atishay Jain, Rakesh Grewal }
+	\end{center}
+	
+	\section{Introduction}
+	Artificial Intelligence is becoming instrumental in a variety of applications. Games serve as a good breeding ground for trying and testing these algorithms in a sandbox with simpler constraints in comparison to real life. In this project, we aim to solve the classical Japanese game of Sokoban, literally referring to a warehouse keeper, created by Hiroyuki Imabayashi and a cult classic.
+	
+	\section{Task Definition}
+	Sokoban is a transportation puzzle where the playing arena is composed of a grid of squares. Some of the squares are marked as crates that the player has to push to a storage location in the warehouse. Some of the squares are marked as walls which acts as constraints that the player as well as the creates cannot enter. \\
+	\\
+	The initial state consists of the player at a certain x,y location on the grid and certain locations marked as crates(or boxes) and target stores. The player can move horizontally or vertically (four directions - Up, Down, Left and Right). The player can push at most a single box (cannot push two boxes together) into an empty space that is not a wall or another box. The player cannot pull the boxes. There are equal number of crates and target locations and the player succeeds once all crates are in target storage locations. The game fails if a crate gets locked up in a corner or with another crate such that the player cannot push the crate any more.
+	
+	\section{Scientific Value \& Scope}
+	Solving Sokoban is a NP-Hard problem, PSPACE-Complete\cite{1} and it has been an active area of research. The branching factor of the Sokoban game is very high and with each iteration, it has an exponentially growing number of pushes and moves. Therefore it needs proper heuristics that can help in eliminating redundant search states. The backtracking algorithm limitations are evident when the size of the puzzle is huge. \\
+	Solving Sokoban has useful applications in robotics, especially motion planning. The robotic movement in a constrained space can be simplified to Sokoban.
+	
+	\section{Literature Review}
+	From the literature study, we gather that the algorithm for solving this highly popular transportation game is researched extensively and various implementations have been formulated for quickly solving this problem with better efficiency. Previous study shows that many heuristics \cite{2} like PI-corral pruning (which reduces the number of positions expanding), hashing (to avoid searching the same position multiple times), deadlock tables (which calculates the positions of the deadlocks in the game) etc. are used to solve the game. Solvers using BFS-A*, DFS-A* are implemented in \cite{3} and is compared with the rudimentary and naive techniques. It is interesting to note that some authors have attempted to translate this problem into a machine learning problem where the machine is used to generate new levels based on the complexity desired by the user \cite{4}.
+	
+	\section{Approach}
+	We will be comparing the behavior and performance of various search algorithms that can be applied to this problem.
+	\subsection{Modeling}
+	Sokoban is a deterministic search problem with a defined start and end state. The formal definition of the model is a follows:
+	\begin{enumerate}
+		\item States: The states of Sokoban consist of the location of the crates and the player in the grid.
+		\item Start State: The start state is hard coded in each level as provided in the original game.
+		\item End State: This state has all the crates in target storage locations. The player can be anywhere on the board.
+		\item Actions: The actions can be ``Left'', ``Right'', ``Up'' or ``Down'' in a way that satisfies the constraints.
+		\item Successor and Cost: Every state transition has a constant cost and the end state has a cost of $0$. The successor to a state will have the player moving to a new location on the board and the crates might been pushed via the movement.
+	\end{enumerate}
+	\subsection{Problem Solving}
+	In this project, Sokoban is solved by various search algorithms and their performances are compared. Initially the baseline approach for this problem is considered as the backtracking algorithm where we explore all the states and corresponding transitions to get a list of all possible solutions and then we pick the best one. The other approaches that provide better solution to this problem that will be explored include depth first search(DFS), breadth first search(BFS), uniform cost search(UCS) and A* approach. We will be trying A* with multiple heuristics like the Euclidean and Manhattan distances between the crates and the target locations. We would also try to explore depth first search with iterative deepening(DFS-ID), A* with iterative deepening(A*-ID) etc.
+	
+	
+	\subsection{Evaluation Metrics}
+	The performance of the Sokoban solvers can be compared using the standard performance indices like the number of states explored, the time taken to solve, the number of steps taken in the solution discovered.
+	\section{Appendix}
+	
+	
+	\begin{thebibliography}{1}
+		\bibitem{1} Dor, Dorit, and Uri Zwick. "SOKOBAN and other motion planning problems." Computational Geometry 13.4 (1999): 215-228.
+		\bibitem{2} http://pavel.klavik.cz/projekty/solver/solver.pdf 
+		\bibitem{3} Li, Zheng, et al. "Object-oriented Sokoban solver: A serious game project for OOAD and AI education." Frontiers in Education Conference (FIE), 2014 IEEE. IEEE, 2014.
+		\bibitem{4} Taylor, Joshua, and Ian Parberry. "Procedural generation of Sokoban levels." Proceedings of the International North American Conference on Intelligent Games and Simulation. 2011.
+	\end{thebibliography}
+	
 \end{document}
