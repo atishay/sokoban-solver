@@ -9,28 +9,28 @@ class Environment:
 	screen = None;
 	size = None;
 
-	
+
 	def __init__(self):
-	
-		if platform.system() == "Windows":
+		print platform.system()
+		if platform.system() == "Windows" or platform.system() == "Darwin":
 			pygame.display.init()
 			pygame.display.set_caption("pySokoban")
 			self.size = (800,600)
 			self.screen = pygame.display.set_mode(self.size)
-		
+
 		elif self.getUserInterface() == "graphics":
 			pygame.display.init()
 			pygame.display.set_caption("pySokoban")
 			self.size = (800,600)
 			self.screen = pygame.display.set_mode(self.size)
-		else: 
+		else:
 			"Ininitializes a new pygame screen using the framebuffer"
 			# Based on "Python GUI in Linux frame buffer"
 			# http://www.karoltomala.com/blog/?p=679
 			disp_no = os.getenv("DISPLAY")
 			if disp_no:
 				print "I'm running under X display = {0}".format(disp_no)
-			
+
 			# Check which frame buffer drivers are available
 			# Start with fbcon since directfb hangs with composite output
 			drivers = ['fbcon', 'directfb', 'svgalib']
@@ -46,16 +46,16 @@ class Environment:
 					continue
 				found = True
 				break
-		
+
 			if not found:
 				raise Exception('No suitable video driver found!')
-        
+
 			self.size = (pygame.display.Info().current_w, pygame.display.Info().current_h)
 			print "Framebuffer size: %d x %d" % (self.size[0], self.size[1])
 			self.screen = pygame.display.set_mode(self.size, pygame.FULLSCREEN)
-		
+
 		# Clear the screen to start
-		self.screen.fill((0, 0, 0))        
+		self.screen.fill((0, 0, 0))
 		# Initialise font support
 		pygame.font.init()
 		# Disable mouse
@@ -74,6 +74,6 @@ class Environment:
 			return "graphics"
 		else:
 			return "framebuffer"
-		
+
 	def getPath(self):
 		return os.path.dirname(os.path.abspath(__file__))
