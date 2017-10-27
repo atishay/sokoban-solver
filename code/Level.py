@@ -1,63 +1,72 @@
 import os
 import copy
 
+
+class Matrix(list):
+    size = None
+    def getSize(self):
+        return self.size
+
+
 class Level:
+    matrix = Matrix()
+    matrix_history = []
 
-	matrix = []
-	matrix_history = []
-	
-	def __init__(self,set,level_num):
-		
-		del self.matrix[:]
-		del self.matrix_history[:]
-		
-		# Create level
-		with open(os.path.dirname(os.path.abspath(__file__)) + '/levels/' + set + '/level' + str(level_num), 'r') as f:
-    			for row in f.read().splitlines():
-					self.matrix.append(list(row))
-			
-	def __del__(self):
-		"Destructor to make sure object shuts down, etc."
-		
-	def getMatrix(self):
-		return self.matrix
+    def __init__(self,set,level_num):
 
-	def addToHistory(self,matrix):
-		self.matrix_history.append(copy.deepcopy(matrix))
+        del self.matrix[:]
+        del self.matrix_history[:]
 
-	def getLastMatrix(self):
-		if len(self.matrix_history) > 0:
-			lastMatrix = self.matrix_history.pop()
-			self.matrix = lastMatrix
-			return lastMatrix
-		else:
-			return self.matrix
+        # Create level
+        with open(os.path.dirname(os.path.abspath(__file__)) + '/levels/' + set + '/level' + str(level_num), 'r') as f:
+                for row in f.read().splitlines():
+                    self.matrix.append(list(row))
 
-	def getPlayerPosition(self):
-		# Iterate all Rows
-		for i in range (0,len(self.matrix)):
-			# Iterate all columns
-			for k in range (0,len(self.matrix[i])-1):
-				if self.matrix[i][k] == "@":
-					return [k,i]
+        max_row_length = 0
+        # Iterate all Rows
+        for i in range(0, len(self.matrix)):
+            # Iterate all columns
+            row_length = len(self.matrix[i])
+            if row_length > max_row_length:
+                max_row_length = row_length
+        self.matrix.size = [max_row_length, len(self.matrix)]
+        self.matrix.width = max_row_length
+        self.matrix.height = len(self.matrix)
 
-	def getBoxes(self):
-		# Iterate all Rows
-		boxes = []
-		for i in range (0,len(self.matrix)):
-			# Iterate all columns
-			for k in range (0,len(self.matrix[i])-1):
-				if self.matrix[i][k] == "$":
-					boxes.append([k,i])
-		return boxes
+    def __del__(self):
+        "Destructor to make sure object shuts down, etc."
 
-	def getSize(self):
-		max_row_length = 0
-		# Iterate all Rows
-		for i in range (0,len(self.matrix)):
-			# Iterate all columns
-			row_length = len(self.matrix[i])
-			if row_length > max_row_length:
-				max_row_length = row_length
-		return [max_row_length,len(self.matrix)]
-		
+    def getMatrix(self):
+        return self.matrix
+
+    def addToHistory(self,matrix):
+        self.matrix_history.append(copy.deepcopy(matrix))
+
+    def getLastMatrix(self):
+        if len(self.matrix_history) > 0:
+            lastMatrix = self.matrix_history.pop()
+            self.matrix = lastMatrix
+            return lastMatrix
+        else:
+            return self.matrix
+
+    def getPlayerPosition(self):
+        # Iterate all Rows
+        for i in range (0,len(self.matrix)):
+            # Iterate all columns
+            for k in range (0,len(self.matrix[i])-1):
+                if self.matrix[i][k] == "@":
+                    return [k,i]
+
+    def getBoxes(self):
+        # Iterate all Rows
+        boxes = []
+        for i in range (0,len(self.matrix)):
+            # Iterate all columns
+            for k in range (0,len(self.matrix[i])-1):
+                if self.matrix[i][k] == "$":
+                    boxes.append([k,i])
+        return boxes
+
+    def getSize(self):
+        return self.matrix.getSize()
