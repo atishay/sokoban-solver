@@ -335,9 +335,7 @@ def runGame(args):
     gui = SokobanGui()
 
     current_level = args.level
-
-    # Choose a level set
-    level_set = "original"
+    level_set = args.set
 
 
     # Initialize Level
@@ -371,36 +369,38 @@ def default(str):
 
 
 def readCommand(argv):
-  """
-  Processes the command used to run pacman from the command line.
-  """
-  from optparse import OptionParser
-  usageStr = """
-  USAGE:      python sokoban.py <options>
-  EXAMPLES:   (1) python sokoban.py
-              (2) python sokoban.py --level 2 to start level 2
-  """
-  parser = OptionParser(usageStr)
+    """
+    Processes the command used to run pacman from the command line.
+    """
+    from optparse import OptionParser
+    usageStr = """
+    USAGE:      python sokoban.py <options>
+    EXAMPLES:   (1) python sokoban.py
+                (2) python sokoban.py --level 2 to start level 2
+    """
+    parser = OptionParser(usageStr)
 
-  parser.add_option('-l', '--level', dest='level', type='int',
+    parser.add_option('-l', '--level', dest='level', type='int',
                     help=default('The level to run'), metavar='level', default=1)
-  options, otherjunk = parser.parse_args(argv)
-  if len(otherjunk) != 0:
-    raise Exception('Command line input not understood: ' + str(otherjunk))
+    parser.add_option('-s', '--set', dest='set', type='string',
+                      help=default('The level set to run'), metavar='set', default="original")
+    options, otherjunk = parser.parse_args(argv)
+    if len(otherjunk) != 0:
+        raise Exception('Command line input not understood: ' + str(otherjunk))
 
-  return options
+    return options
 
 
 if __name__ == '__main__':
-  """
-  The main function called when sokoban.py is run
-  from the command line:
+    """
+    The main function called when sokoban.py is run
+    from the command line:
 
-  > python pacman.py
+    > python pacman.py
 
-  See the usage string for more details.
+    See the usage string for more details.
 
-  > python pacman.py --help
-  """
-  args = readCommand(sys.argv[1:])  # Get game components based on input
-  runGame(args)
+    > python pacman.py --help
+    """
+    args = readCommand(sys.argv[1:])  # Get game components based on input
+    runGame(args)
