@@ -11,7 +11,6 @@ class Environment:
 
 
     def __init__(self):
-        print platform.system()
         if platform.system() == "Windows" or platform.system() == "Darwin":
             pygame.display.init()
             pygame.display.set_caption("pySokoban")

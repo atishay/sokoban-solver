@@ -80,7 +80,7 @@ class Level:
     def addToHistory(self,matrix):
         self.matrix_history.append(copy.deepcopy(matrix))
 
-    def getLastMatrix(self):
+    def undo(self):
         if len(self.matrix_history) > 0:
             lastMatrix = self.matrix_history.pop()
             self.matrix = lastMatrix
