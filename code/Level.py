@@ -9,6 +9,7 @@ class Matrix(list):
     utility methods
     """
     size = None
+    target_found = False
     def getSize(self):
         """
         Gets the size of the matrix (The maximum width/height)
@@ -39,11 +40,300 @@ class Matrix(list):
                     boxes.append([k, i])
         return boxes
 
-    def isEnd(self):
+    def isSuccess(self):
         """
         Checks if the current state is the end state of the game.
         """
         return len(self.getBoxes()) == 0
+
+    # def canMove(self, direction):
+    def successor(self, direction, performOnSelf=True):
+        if performOnSelf:
+            return self.successorInternal(self, direction)
+        matrix = copy.deepcopy(self)
+        return self.successorInternal(matrix, direction)
+
+    def successorInternal(self, matrix, direction):
+        x = matrix.getPlayerPosition()[0]
+        y = matrix.getPlayerPosition()[1]
+
+        #print boxes
+        print matrix.getBoxes()
+
+        if direction == "L":
+            print "######### Moving Left #########"
+
+            # if is_space
+            if matrix[y][x - 1] == " ":
+                print "OK Space Found"
+                matrix[y][x - 1] = "@"
+                if matrix.target_found == True:
+                    matrix[y][x] = "."
+                    matrix.target_found = False
+                else:
+                    matrix[y][x] = " "
+
+            # if is_box
+            elif matrix[y][x - 1] == "$":
+                print "Box Found"
+                if matrix[y][x - 2] == " ":
+                    matrix[y][x - 2] = "$"
+                    matrix[y][x - 1] = "@"
+                    if matrix.target_found == True:
+                        matrix[y][x] = "."
+                        matrix.target_found = False
+                    else:
+                        matrix[y][x] = " "
+                elif matrix[y][x - 2] == ".":
+                    matrix[y][x - 2] = "*"
+                    matrix[y][x - 1] = "@"
+                    if matrix.target_found == True:
+                        matrix[y][x] = "."
+                        matrix.target_found = False
+                    else:
+                        matrix[y][x] = " "
+
+            # if is_box_on_target
+            elif matrix[y][x - 1] == "*":
+                print "Box on target Found"
+                if matrix[y][x - 2] == " ":
+                    matrix[y][x - 2] = "$"
+                    matrix[y][x - 1] = "@"
+                    if matrix.target_found == True:
+                        matrix[y][x] = "."
+                    else:
+                        matrix[y][x] = " "
+                    matrix.target_found = True
+
+                elif matrix[y][x - 2] == ".":
+                    matrix[y][x - 2] = "*"
+                    matrix[y][x - 1] = "@"
+                    if matrix.target_found == True:
+                        matrix[y][x] = "."
+                    else:
+                        matrix[y][x] = " "
+                    matrix.target_found = True
+
+            # if is_target
+            elif matrix[y][x - 1] == ".":
+                print "Target Found"
+                matrix[y][x - 1] = "@"
+                if matrix.target_found == True:
+                    matrix[y][x] = "."
+                else:
+                    matrix[y][x] = " "
+                matrix.target_found = True
+
+            # else
+            else:
+                print "There is a wall here"
+
+        elif direction == "R":
+            print "######### Moving Right #########"
+
+            # if is_space
+            if matrix[y][x + 1] == " ":
+                print "OK Space Found"
+                matrix[y][x + 1] = "@"
+                if matrix.target_found == True:
+                    matrix[y][x] = "."
+                    matrix.target_found = False
+                else:
+                    matrix[y][x] = " "
+
+            # if is_box
+            elif matrix[y][x + 1] == "$":
+                print "Box Found"
+                if matrix[y][x + 2] == " ":
+                    matrix[y][x + 2] = "$"
+                    matrix[y][x + 1] = "@"
+                    if matrix.target_found == True:
+                        matrix[y][x] = "."
+                        matrix.target_found = False
+                    else:
+                        matrix[y][x] = " "
+
+                elif matrix[y][x + 2] == ".":
+                    matrix[y][x + 2] = "*"
+                    matrix[y][x + 1] = "@"
+                    if matrix.target_found == True:
+                        matrix[y][x] = "."
+                        matrix.target_found = False
+                    else:
+                        matrix[y][x] = " "
+
+            # if is_box_on_target
+            elif matrix[y][x + 1] == "*":
+                print "Box on target Found"
+                if matrix[y][x + 2] == " ":
+                    matrix[y][x + 2] = "$"
+                    matrix[y][x + 1] = "@"
+                    if matrix.target_found == True:
+                        matrix[y][x] = "."
+                    else:
+                        matrix[y][x] = " "
+                    matrix.target_found = True
+
+                elif matrix[y][x + 2] == ".":
+                    matrix[y][x + 2] = "*"
+                    matrix[y][x + 1] = "@"
+                    if matrix.target_found == True:
+                        matrix[y][x] = "."
+                    else:
+                        matrix[y][x] = " "
+                    matrix.target_found = True
+
+            # if is_target
+            elif matrix[y][x + 1] == ".":
+                print "Target Found"
+                matrix[y][x + 1] = "@"
+                if matrix.target_found == True:
+                    matrix[y][x] = "."
+                else:
+                    matrix[y][x] = " "
+                matrix.target_found = True
+
+            # else
+            else:
+                print "There is a wall here"
+
+        elif direction == "D":
+            print "######### Moving Down #########"
+
+            # if is_space
+            if matrix[y + 1][x] == " ":
+                print "OK Space Found"
+                matrix[y + 1][x] = "@"
+                if matrix.target_found == True:
+                    matrix[y][x] = "."
+                    matrix.target_found = False
+                else:
+                    matrix[y][x] = " "
+
+            # if is_box
+            elif matrix[y + 1][x] == "$":
+                print "Box Found"
+                if matrix[y + 2][x] == " ":
+                    matrix[y + 2][x] = "$"
+                    matrix[y + 1][x] = "@"
+                    if matrix.target_found == True:
+                        matrix[y][x] = "."
+                        matrix.target_found = False
+                    else:
+                        matrix[y][x] = " "
+
+                elif matrix[y + 2][x] == ".":
+                    matrix[y + 2][x] = "*"
+                    matrix[y + 1][x] = "@"
+                    if matrix.target_found == True:
+                        matrix[y][x] = "."
+                        matrix.target_found = False
+                    else:
+                        matrix[y][x] = " "
+
+            # if is_box_on_target
+            elif matrix[y + 1][x] == "*":
+                print "Box on target Found"
+                if matrix[y + 2][x] == " ":
+                    matrix[y + 2][x] = "$"
+                    matrix[y + 1][x] = "@"
+                    if matrix.target_found == True:
+                        matrix[y][x] = "."
+                    else:
+                        matrix[y][x] = " "
+                    matrix.target_found = True
+
+                elif matrix[y + 2][x] == ".":
+                    matrix[y + 2][x] = "*"
+                    matrix[y + 1][x] = "@"
+                    if matrix.target_found == True:
+                        matrix[y][x] = "."
+                    else:
+                        matrix[y][x] = " "
+                    matrix.target_found = True
+
+            # if is_target
+            elif matrix[y + 1][x] == ".":
+                print "Target Found"
+                matrix[y + 1][x] = "@"
+                if matrix.target_found == True:
+                    matrix[y][x] = "."
+                else:
+                    matrix[y][x] = " "
+                matrix.target_found = True
+
+            # else
+            else:
+                print "There is a wall here"
+
+        elif direction == "U":
+            print "######### Moving Up #########"
+
+            # if is_space
+            if matrix[y - 1][x] == " ":
+                print "OK Space Found"
+                matrix[y - 1][x] = "@"
+                if matrix.target_found == True:
+                    matrix[y][x] = "."
+                    matrix.target_found = False
+                else:
+                    matrix[y][x] = " "
+
+            # if is_box
+            elif matrix[y - 1][x] == "$":
+                print "Box Found"
+                if matrix[y - 2][x] == " ":
+                    matrix[y - 2][x] = "$"
+                    matrix[y - 1][x] = "@"
+                    if matrix.target_found == True:
+                        matrix[y][x] = "."
+                        matrix.target_found = False
+                    else:
+                        matrix[y][x] = " "
+
+                elif matrix[y - 2][x] == ".":
+                    matrix[y - 2][x] = "*"
+                    matrix[y - 1][x] = "@"
+                    if matrix.target_found == True:
+                        matrix[y][x] = "."
+                        matrix.target_found = False
+                    else:
+                        matrix[y][x] = " "
+
+            # if is_box_on_target
+            elif matrix[y - 1][x] == "*":
+                print "Box on target Found"
+                if matrix[y - 2][x] == " ":
+                    matrix[y - 2][x] = "$"
+                    matrix[y - 1][x] = "@"
+                    if matrix.target_found == True:
+                        matrix[y][x] = "."
+                    else:
+                        matrix[y][x] = " "
+                    matrix.target_found = True
+
+                elif matrix[y - 2][x] == ".":
+                    matrix[y - 2][x] = "*"
+                    matrix[y - 1][x] = "@"
+                    if matrix.target_found == True:
+                        matrix[y][x] = "."
+                    else:
+                        matrix[y][x] = " "
+                    matrix.target_found = True
+
+            # if is_target
+            elif matrix[y - 1][x] == ".":
+                print "Target Found"
+                matrix[y - 1][x] = "@"
+                if matrix.target_found == True:
+                    matrix[y][x] = "."
+                else:
+                    matrix[y][x] = " "
+                matrix.target_found = True
+
+            # else
+            else:
+                print "There is a wall here"
 
 
 class Level:
