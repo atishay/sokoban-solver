@@ -3,9 +3,47 @@ import copy
 
 
 class Matrix(list):
+    """
+    A Matrix represents a game state.
+    It contains not only the grid information but also
+    utility methods
+    """
     size = None
     def getSize(self):
+        """
+        Gets the size of the matrix (The maximum width/height)
+        """
         return self.size
+
+    def getPlayerPosition(self):
+        """
+        Gets the position of the player in the current state
+        """
+        # Iterate all Rows
+        for i in range(0, len(self)):
+            # Iterate all columns
+            for k in range(0, len(self[i]) - 1):
+                if self[i][k] == "@":
+                    return [k, i]
+
+    def getBoxes(self):
+        """
+        Gets the position of all the boxes on screen
+        """
+        # Iterate all Rows
+        boxes = []
+        for i in range(0, len(self)):
+            # Iterate all columns
+            for k in range(0, len(self[i]) - 1):
+                if self[i][k] == "$":
+                    boxes.append([k, i])
+        return boxes
+
+    def isEnd(self):
+        """
+        Checks if the current state is the end state of the game.
+        """
+        return len(self.getBoxes()) == 0
 
 
 class Level:
@@ -50,23 +88,4 @@ class Level:
         else:
             return self.matrix
 
-    def getPlayerPosition(self):
-        # Iterate all Rows
-        for i in range (0,len(self.matrix)):
-            # Iterate all columns
-            for k in range (0,len(self.matrix[i])-1):
-                if self.matrix[i][k] == "@":
-                    return [k,i]
 
-    def getBoxes(self):
-        # Iterate all Rows
-        boxes = []
-        for i in range (0,len(self.matrix)):
-            # Iterate all columns
-            for k in range (0,len(self.matrix[i])-1):
-                if self.matrix[i][k] == "$":
-                    boxes.append([k,i])
-        return boxes
-
-    def getSize(self):
-        return self.matrix.getSize()

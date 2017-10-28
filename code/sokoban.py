@@ -17,13 +17,13 @@ def movePlayer(direction,myLevel):
 
     myLevel.addToHistory(matrix)
 
-    x = myLevel.getPlayerPosition()[0]
-    y = myLevel.getPlayerPosition()[1]
+    x = matrix.getPlayerPosition()[0]
+    y = matrix.getPlayerPosition()[1]
 
     global target_found
 
     #print boxes
-    print  myLevel.getBoxes()
+    print  matrix.getBoxes()
 
     if direction == "L":
         print "######### Moving Left #########"
@@ -303,9 +303,9 @@ def movePlayer(direction,myLevel):
 
     gui.drawLevel(matrix)
 
-    print "Boxes remaining: " + str(len(myLevel.getBoxes()))
+    print "Boxes remaining: " + str(len(matrix.getBoxes()))
 
-    if len(myLevel.getBoxes()) == 0:
+    if matrix.isEnd():
         gui.drawComplete()
         print "Level Completed"
         global current_level
