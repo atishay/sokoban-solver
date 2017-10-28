@@ -32,7 +32,7 @@ In pySokoban each level is a plain text file. A collection of levels is called a
 | Player on goal square | +          |
 | Box                   | $          |
 | Box on goal square    | *          |
-| Goal square	        | .          |
+| Goal square	          | .          |
 | Floor                 | (Space)    |
 
 A typical level looks like this:

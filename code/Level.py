@@ -47,7 +47,7 @@ class Matrix(list):
         return len(self.getBoxes()) == 0
 
     # def canMove(self, direction):
-    def successor(self, direction, performOnSelf=True):
+    def successor(self, direction, performOnSelf=False):
         if performOnSelf:
             return self.successorInternal(self, direction)
         matrix = copy.deepcopy(self)

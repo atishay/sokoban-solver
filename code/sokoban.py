@@ -8,6 +8,8 @@
 # import time
 import pygame
 import sys
+import solver
+
 from gui import SokobanGui
 from Level import Level
 
@@ -17,7 +19,7 @@ def movePlayer(direction,myLevel):
 
     myLevel.addToHistory(matrix)
 
-    matrix.successor(direction)
+    matrix.successor(direction, True)
 
     gui.drawLevel(matrix)
 
@@ -53,28 +55,44 @@ def runGame(args):
 
     # Initialize Level
     initLevel(level_set,current_level)
-
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
-                    movePlayer("L",myLevel)
-                elif event.key == pygame.K_RIGHT:
-                    movePlayer("R",myLevel)
-                elif event.key == pygame.K_DOWN:
-                    movePlayer("D",myLevel)
-                elif event.key == pygame.K_UP:
-                    movePlayer("U",myLevel)
-                elif event.key == pygame.K_u:
-                    gui.drawLevel(myLevel.undo())
-                elif event.key == pygame.K_r:
-                    initLevel(level_set,current_level)
-                elif event.key == pygame.K_ESCAPE:
+    if args.method is "human":
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_LEFT:
+                        movePlayer("L",myLevel)
+                    elif event.key == pygame.K_RIGHT:
+                        movePlayer("R",myLevel)
+                    elif event.key == pygame.K_DOWN:
+                        movePlayer("D",myLevel)
+                    elif event.key == pygame.K_UP:
+                        movePlayer("U",myLevel)
+                    elif event.key == pygame.K_u:
+                        gui.drawLevel(myLevel.undo())
+                    elif event.key == pygame.K_r:
+                        initLevel(level_set,current_level)
+                    elif event.key == pygame.K_ESCAPE:
+                        pygame.quit()
+                        sys.exit()
+                elif event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-            elif event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
+    else:
+        solution = solver.solver()
+        moves = []
+        if args.method == "dfs":
+            moves = solution.dfs(myLevel.getMatrix())
+        elif args.method == "bfs":
+            moves = solution.bfs(myLevel.getMatrix())
+        elif args.method == "ucs":
+            moves = solution.ucs(myLevel.getMatrix())
+
+        print moves
+
+        for move in moves:
+            movePlayer(move, myLevel)
+
+
 
 
 def default(str):
@@ -97,6 +115,8 @@ def readCommand(argv):
                     help=default('The level to run'), metavar='level', default=1)
     parser.add_option('-s', '--set', dest='set', type='string',
                       help=default('The level set to run'), metavar='set', default="original")
+    parser.add_option('-m', '--method', dest='method', type='string',
+                    help=default('The method set to solve'), metavar='method', default="human")
     options, otherjunk = parser.parse_args(argv)
     if len(otherjunk) != 0:
         raise Exception('Command line input not understood: ' + str(otherjunk))
