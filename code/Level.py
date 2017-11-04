@@ -41,6 +41,19 @@ class Matrix(list):
                     boxes.append([k, i])
         return boxes
 
+    def getTargets(self):
+        """
+        Gets the position of all the targets on screen
+        """
+        # Iterate all Rows
+        boxes = []
+        for i in range(0, len(self)):
+            # Iterate all columns
+            for k in range(0, len(self[i]) - 1):
+                if self[i][k] == ".":
+                    boxes.append([k, i])
+        return boxes
+
     def isSuccess(self):
         """
         Checks if the current state is the end state of the game.
@@ -55,11 +68,11 @@ class Matrix(list):
         y = self.getPlayerPosition()[1]
         def update_valid(item, move, get_two_step):
             if item not in "*#$":
-                return (move, 1)
+                return (move, 2)
             if item in "$*" and get_two_step() not in "*#$":
                 # We really prefer pushing the blocks over just roaming around
                 # We do not like moving blocks out of their respective targets
-                return (move, 0.2) if item is '$' else (move, 10)
+                return (move, 1) if item is '$' else (move, 10)
             return None
         moves = []
         action_cost = update_valid(self[y][x - 1], 'L', lambda: self[y][x - 2])
@@ -76,7 +89,6 @@ class Matrix(list):
             moves.append(action_cost)
         return moves
 
-    # def canMove(self, direction):
     def successor(self, direction, performOnSelf=False):
         if performOnSelf:
             return self.successorInternal(self, direction)

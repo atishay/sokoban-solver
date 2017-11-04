@@ -89,6 +89,8 @@ def runGame(args):
                 moves = solution.bfs(myLevel.getMatrix())
             elif args.method == "ucs":
                 moves = solution.ucs(myLevel.getMatrix())
+            elif args.method == "astar":
+                moves = solution.astar(myLevel.getMatrix())
 
             print "Level: %d, Moves: %s"%(current_level, moves)
             if moves is not "":
