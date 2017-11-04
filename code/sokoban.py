@@ -23,11 +23,11 @@ def movePlayer(direction,myLevel):
 
     gui.drawLevel(matrix)
 
-    print "Boxes remaining: " + str(len(matrix.getBoxes()))
+    # print "Boxes remaining: " + str(len(matrix.getBoxes()))
 
     if matrix.isSuccess():
         gui.drawComplete()
-        print "Level Completed"
+        # print "Level Completed"
         global current_level
         current_level += 1
         initLevel(level_set,current_level)
@@ -78,19 +78,26 @@ def runGame(args):
                     pygame.quit()
                     sys.exit()
     else:
-        solution = solver.solver()
-        moves = []
-        if args.method == "dfs":
-            moves = solution.dfs(myLevel.getMatrix())
-        elif args.method == "bfs":
-            moves = solution.bfs(myLevel.getMatrix())
-        elif args.method == "ucs":
-            moves = solution.ucs(myLevel.getMatrix())
+        old_level = current_level - 1
+        while old_level is current_level - 1:
+            old_level = current_level
+            solution = solver.solver()
+            moves = []
+            if args.method == "dfs":
+                moves = solution.dfs(myLevel.getMatrix())
+            elif args.method == "bfs":
+                moves = solution.bfs(myLevel.getMatrix())
+            elif args.method == "ucs":
+                moves = solution.ucs(myLevel.getMatrix())
 
-        print moves
+            print "Level: %d, Moves: %s"%(current_level, moves)
+            if moves is not "":
+                for move in moves:
+                    movePlayer(move, myLevel)
 
-        for move in moves:
-            movePlayer(move, myLevel)
+            else:
+                print "Failed for level"
+
 
 
 

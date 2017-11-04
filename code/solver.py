@@ -1,29 +1,113 @@
+from collections import deque
+import heapq
 
 class solver():
-    def dfs(self, startState, cost=[1,2], maxDepth=10):
-        def recurse(state, depth, actions):
+    def dfs(self, startState, maxDepth=100, cache={}):
+        stack = deque([(startState, "")])
+        while len(stack) > 0:
+            state, actions = stack.pop()
+            cache[state.toString()] = len(actions)
             if state.isSuccess():
                 return actions
             if state.isFailure():
-                return []
-            if depth is maxDepth:
-                return ""
-            for action in "LRUD":
+                continue
+            if len(actions) is maxDepth:
+                continue
+            for (action, _) in state.getPossibleActions():
                 successor = state.successor(action)
-                op = recurse(successor, depth + 1, actions + action)
-                if len(op) > 0:
-                    return op
-            return ""
-        return recurse(startState, 0, "")
+                # Don't go to an explored state
+                if successor.toString() in cache and cache[successor.toString()] <= len(actions) + 1:
+                    continue
+                # # Don't go to a state already marked for visit
+                # if next((x for (x, _) in stack if x.toString() is successor.toString()), None) is not None:
+                #     continue
+                stack.append((successor, actions + action))
+        return ""
 
-    def bfs(self, startState, cost=[1, 2], maxDepth=500):
-        pass
+    def bfs(self, startState, maxDepth=50, cache={}):
+        queue = deque([(startState, "")])
+        while len(queue) > 0:
+            state, actions = queue.popleft()
+            cache[state.toString()] = len(actions)
+            if state.isSuccess():
+                return actions
+            if state.isFailure():
+                continue
+            if len(actions) is maxDepth:
+                continue
+            for (action, _) in state.getPossibleActions():
+                successor = state.successor(action)
+                # Don't go to an explored state
+                if successor.toString() in cache and cache[successor.toString()] <= len(actions) + 1:
+                    continue
+                # # Don't go to a state already marked for visit
+                # if next((x for (x, _) in queue if x.toString() is successor.toString()), None) is not None:
+                #     continue
+                queue.append((successor, actions + action))
+        return ""
 
-    def back(self, startState, cost=[1, 2], maxDepth=500):
-        pass
+    def back(self, startState, maxDepth=500):
+        return ""
 
-    def ucs(self, startState, cost=[1, 2], maxDepth=500):
-        pass
+    def ucs(self, startState, maxCost=500, cache={}):
+        queue = PriorityQueue()
+        action_map = {}
+        queue.update(startState, 0)
+        action_map[startState.toString()] = ""
+        while not queue.empty():
+            state, cost = queue.removeMin()
+            actions = action_map[state.toString()]
+            cache[state.toString()] = len(actions)
+            if state.isSuccess():
+                return actions
+            if state.isFailure():
+                continue
+            if cost >= maxCost:
+                continue
+            for (action, cost_delta) in state.getPossibleActions():
+                successor = state.successor(action)
+                # Don't go to an explored state
+                if successor.toString() in cache:
+                    continue
+                old = action_map[successor.toString()] if successor.toString() in action_map else None
+                if not old or len(old) > len(actions) + 1:
+                    action_map[successor.toString()] = actions + action
+                queue.update(successor, cost + cost_delta)
+        return ""
 
     def astar(self, startState, cost=[1, 2], maxDepth=500):
         pass
+
+
+# Data structure for supporting uniform cost search.
+class PriorityQueue:
+    def __init__(self):
+        self.DONE = -100000
+        self.heap = []
+        self.priorities = {}  # Map from state to priority
+
+    # Insert |state| into the heap with priority |newPriority| if
+    # |state| isn't in the heap or |newPriority| is smaller than the existing
+    # priority.
+    # Return whether the priority queue was updated.
+    def update(self, state, newPriority):
+        oldPriority = self.priorities.get(state)
+        if oldPriority == None or newPriority < oldPriority:
+            self.priorities[state] = newPriority
+            heapq.heappush(self.heap, (newPriority, state))
+            return True
+        return False
+
+    # Returns (state with minimum priority, priority)
+    # or (None, None) if the priority queue is empty.
+    def removeMin(self):
+        while len(self.heap) > 0:
+            priority, state = heapq.heappop(self.heap)
+            if self.priorities[state] == self.DONE:
+                continue  # Outdated priority, skip
+            self.priorities[state] = self.DONE
+            return (state, priority)
+        return (None, None)  # Nothing left...
+
+    def empty(self):
+        return len(self.heap) is 0

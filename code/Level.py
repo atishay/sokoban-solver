@@ -10,6 +10,7 @@ class Matrix(list):
     """
     size = None
     target_found = False
+    _string = None
     def getSize(self):
         """
         Gets the size of the matrix (The maximum width/height)
@@ -50,7 +51,30 @@ class Matrix(list):
         return False
 
     def getPossibleActions(self):
-        return "LRUD"
+        x = self.getPlayerPosition()[0]
+        y = self.getPlayerPosition()[1]
+        def update_valid(item, move, get_two_step):
+            if item not in "*#$":
+                return (move, 1)
+            if item in "$*" and get_two_step() not in "*#$":
+                # We really prefer pushing the blocks over just roaming around
+                # We do not like moving blocks out of their respective targets
+                return (move, 0.2) if item is '$' else (move, 10)
+            return None
+        moves = []
+        action_cost = update_valid(self[y][x - 1], 'L', lambda: self[y][x - 2])
+        if action_cost is not None:
+            moves.append(action_cost)
+        action_cost = update_valid(self[y][x + 1], 'R', lambda: self[y][x + 2])
+        if action_cost is not None:
+            moves.append(action_cost)
+        action_cost = update_valid(self[y - 1][x], 'U', lambda: self[y - 2][x])
+        if action_cost is not None:
+            moves.append(action_cost)
+        action_cost = update_valid(self[y + 1][x], 'D', lambda: self[y + 2][x])
+        if action_cost is not None:
+            moves.append(action_cost)
+        return moves
 
     # def canMove(self, direction):
     def successor(self, direction, performOnSelf=False):
@@ -58,7 +82,24 @@ class Matrix(list):
             return self.successorInternal(self, direction)
         matrix = copy.deepcopy(self)
         self.successorInternal(matrix, direction)
+        matrix._string = None
         return matrix
+
+    def toString(self, clear=False):
+        """
+        Gives a string version of self that is cached with the assumption that
+        the object has not been mutated. The value can be stale if clear is not true
+        """
+        if self._string is not None and clear is False:
+            return self._string
+        self._string = "\n".join(["".join(x) for x in self])
+        return self._string
+
+    def __hash__(self):
+        return hash(self.toString())
+
+    def __str__(self):
+        return self.toString()
 
     def successorInternal(self, matrix, direction):
         x = matrix.getPlayerPosition()[0]
