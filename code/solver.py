@@ -93,8 +93,8 @@ class solver():
                 return actions
             if state.isFailure():
                 continue
-            # if cost >= maxCost:
-            #     continue
+            if cost >= maxCost:
+                continue
             for (action, cost_delta) in state.getPossibleActions():
                 successor = state.successor(action)
                 # Don't go to an explored state again
