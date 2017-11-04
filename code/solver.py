@@ -24,6 +24,9 @@ class solver():
                 stack.append((successor, actions + action))
         return ""
 
+    def back(self, startState, maxDepth=500):
+        return ""
+
     def bfs(self, startState, maxDepth=50, cache={}):
         queue = deque([(startState, "")])
         while len(queue) > 0:
@@ -44,9 +47,6 @@ class solver():
                 # if next((x for (x, _) in queue if x.toString() is successor.toString()), None) is not None:
                 #     continue
                 queue.append((successor, actions + action))
-        return ""
-
-    def back(self, startState, maxDepth=500):
         return ""
 
     def ucs(self, startState, maxCost=500, cache={}):
