@@ -1,0 +1,15 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
+\BOOKMARK [1][-]{section.2}{General Game Mechanics}{}% 2
+\BOOKMARK [1][-]{section.3}{States and Modeling}{}% 3
+\BOOKMARK [1][-]{section.4}{Algorithms}{}% 4
+\BOOKMARK [2][-]{subsection.4.1}{Baseline \(Backtracking Algorithm\) and Oracle Implementation}{section.4}% 5
+\BOOKMARK [2][-]{subsection.4.2}{Depth First Search}{section.4}% 6
+\BOOKMARK [2][-]{subsection.4.3}{Breadth First Search}{section.4}% 7
+\BOOKMARK [2][-]{subsection.4.4}{Uniform cost Search}{section.4}% 8
+\BOOKMARK [1][-]{section.5}{Pruning Techniques}{}% 9
+\BOOKMARK [2][-]{subsection.5.1}{Move appension}{section.5}% 10
+\BOOKMARK [2][-]{subsection.5.2}{Hashing}{section.5}% 11
+\BOOKMARK [1][-]{section.6}{Results}{}% 12
+\BOOKMARK [1][-]{section.7}{Next Steps}{}% 13
+\BOOKMARK [1][-]{section.8}{Appendix 1}{}% 14
+\BOOKMARK [1][-]{section.9}{Appendix 2}{}% 15
