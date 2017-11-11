@@ -104,6 +104,8 @@ def solve(args, myLevel):
         moves = solution.bfs(myLevel.getMatrix())
     elif args.method == "ucs":
         moves = solution.ucs(myLevel.getMatrix())
+    elif args.method == "back":
+        moves = solution.back(myLevel.getMatrix())
     elif args.method == "astar":
         moves = solution.astar(myLevel.getMatrix())
     # elif args.method == "astarid":

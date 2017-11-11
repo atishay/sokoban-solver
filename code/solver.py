@@ -27,7 +27,7 @@ class solver():
         "manhatten": distance(lambda a, b: abs(a[0] - b[0]) + abs(a[1] - b[1])),
         "none": lambda x: 0
     }
-    def dfs(self, startState, maxDepth=100, cache={}):
+    def dfs(self, startState, maxDepth=50, cache={}):
         stack = deque([(startState, "")])
         while len(stack) > 0:
             state, actions = stack.pop()
@@ -49,8 +49,31 @@ class solver():
                 stack.append((successor, actions + action))
         return ""
 
-    def back(self, startState, maxDepth=500):
-        return ""
+    def back(self, startState, maxDepth=130, cache={}):
+        options = []
+        stack = deque([(startState, "")])
+        while len(stack) > 0:
+            state, actions = stack.pop()
+            cache[state.toString()] = len(actions)
+            if state.isSuccess():
+                options.append(actions);
+                continue
+            if state.isFailure():
+                continue
+            if len(actions) is maxDepth:
+                continue
+            for (action, _) in state.getPossibleActions():
+                successor = state.successor(action)
+                # Don't go to an explored state
+                if successor.toString() in cache and cache[successor.toString()] <= len(actions) + 1:
+                    continue
+                # # Don't go to a state already marked for visit
+                # if next((x for (x, _) in stack if x.toString() is successor.toString()), None) is not None:
+                #     continue
+                stack.append((successor, actions + action))
+        if len(options) is 0:
+            return ""
+        return min(options, key=lambda x: len(x))
 
     def bfs(self, startState, maxDepth=50, cache={}):
         return self.ucs(startState, cache=cache, cost="none")
