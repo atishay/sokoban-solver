@@ -106,6 +106,10 @@ def solve(args, myLevel):
         moves = solution.ucs(myLevel.getMatrix())
     elif args.method == "astar":
         moves = solution.astar(myLevel.getMatrix())
+    # elif args.method == "astarid":
+    #     moves = solution.astarid(myLevel.getMatrix())
+    elif args.method == "dfsid":
+        moves = solution.dfsid(myLevel.getMatrix())
     print "Level: %d, Moves: %s" % (current_level, moves)
     return moves
 
