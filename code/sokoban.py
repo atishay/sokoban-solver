@@ -95,6 +95,7 @@ def runGame(args):
                                 sys.exit()
             else:
                 print "Failed for level %d"%(current_level)
+                current_level = current_level + 1
 
 
 # @profile
@@ -137,7 +138,6 @@ def solve(args, myLevel):
         print "Timeout"
         log_file.write(args.set + ',' + str(current_level) + ',' + args.method + ',' + "999999" +
                        ',' + str(len(moves)) + ',' + str(len(cache)) + '\n')
-        current_level = current_level + 1
 
     # solveInternal(method=args.method, cache=cache)
     print "Level: %d, Moves: %s Length: %d" % (current_level, moves, len(moves))
