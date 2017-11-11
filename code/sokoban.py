@@ -9,6 +9,7 @@ import pygame
 import sys
 import solver
 import time
+from multiprocessing import Process, Queue
 
 from gui import SokobanGui
 from Level import Level
@@ -94,30 +95,48 @@ def runGame(args):
             else:
                 print "Failed for level %d"%(current_level)
 
+def solveInternal(cache, method, ret):
+    solution = solver.solver()
+    moves = []
+    if method == "dfs":
+        moves = solution.dfs(myLevel.getMatrix(), cache=cache)
+    elif method == "bfs":
+        moves = solution.bfs(myLevel.getMatrix(), cache=cache)
+    elif method == "ucs":
+        moves = solution.ucs(myLevel.getMatrix(), cache=cache)
+    elif method == "back":
+        moves = solution.back(myLevel.getMatrix(), cache=cache)
+    elif method == "astar":
+        moves = solution.astar(myLevel.getMatrix(), cache=cache)
+    # elif method == "astarid":
+    #     moves = solution.astarid(myLevel.getMatrix())
+    elif method == "dfsid":
+        moves = solution.dfsid(myLevel.getMatrix())
+    ret.put(moves)
+    # return moves
 
 def solve(args, myLevel):
     log_file = open(args.method + '.txt', 'a')
     start_time = time.time() * 1000
-    solution = solver.solver()
-    moves = []
-    cache={}
-    if args.method == "dfs":
-        moves = solution.dfs(myLevel.getMatrix(), cache=cache)
-    elif args.method == "bfs":
-        moves = solution.bfs(myLevel.getMatrix(), cache=cache)
-    elif args.method == "ucs":
-        moves = solution.ucs(myLevel.getMatrix(), cache=cache)
-    elif args.method == "back":
-        moves = solution.back(myLevel.getMatrix(), cache=cache)
-    elif args.method == "astar":
-        moves = solution.astar(myLevel.getMatrix(), cache=cache)
-    # elif args.method == "astarid":
-    #     moves = solution.astarid(myLevel.getMatrix())
-    elif args.method == "dfsid":
-        moves = solution.dfsid(myLevel.getMatrix())
+    cache = {}
+    ret = Queue()
+    p = Process(target=solveInternal, args=(cache, args.method, ret))
+    p.start()
+    p.join(60)
+    moves = ""
+    global current_level
 
-    log_file.write(args.set + ',' + str(current_level) + ',' + args.method + ',' + str(time.time() * 1000 - start_time) +
-                   ',' + str(len(moves)) + ',' + str(len(cache)) + '\n')
+    if not ret.empty():
+        moves = ret.get()
+        log_file.write(args.set + ',' + str(current_level) + ',' + args.method + ',' + str(time.time() * 1000 - start_time) +
+                       ',' + str(len(moves)) + ',' + str(len(cache)) + '\n')
+    else:
+        print "Timeout"
+        log_file.write(args.set + ',' + str(current_level) + ',' + args.method + ',' + "999999" +
+                       ',' + str(len(moves)) + ',' + str(len(cache)) + '\n')
+        current_level = current_level + 1
+
+    # solveInternal(method=args.method, cache=cache)
     print "Level: %d, Moves: %s Length: %d" % (current_level, moves, len(moves))
     return moves
 
