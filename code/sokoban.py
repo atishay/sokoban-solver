@@ -55,7 +55,7 @@ def runGame(args):
 
     # Initialize Level
     initLevel(level_set,current_level)
-    if args.method is "human":
+    if args.method == "human":
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
@@ -81,27 +81,33 @@ def runGame(args):
         old_level = current_level - 1
         while old_level is current_level - 1:
             old_level = current_level
-            solution = solver.solver()
-            moves = []
-            if args.method == "dfs":
-                moves = solution.dfs(myLevel.getMatrix())
-            elif args.method == "bfs":
-                moves = solution.bfs(myLevel.getMatrix())
-            elif args.method == "ucs":
-                moves = solution.ucs(myLevel.getMatrix())
-            elif args.method == "astar":
-                moves = solution.astar(myLevel.getMatrix())
-
-            print "Level: %d, Moves: %s"%(current_level, moves)
+            moves = solve(args, myLevel)
             if moves is not "":
                 for move in moves:
                     movePlayer(move, myLevel)
-
+                    if args.gui == "True":
+                        pygame.time.wait(100)
+                        for event in pygame.event.get():
+                            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+                                pygame.quit()
+                                sys.exit()
             else:
-                print "Failed for level"
+                print "Failed for level %d"%(current_level)
 
 
-
+def solve(args, myLevel):
+    solution = solver.solver()
+    moves = []
+    if args.method == "dfs":
+        moves = solution.dfs(myLevel.getMatrix())
+    elif args.method == "bfs":
+        moves = solution.bfs(myLevel.getMatrix())
+    elif args.method == "ucs":
+        moves = solution.ucs(myLevel.getMatrix())
+    elif args.method == "astar":
+        moves = solution.astar(myLevel.getMatrix())
+    print "Level: %d, Moves: %s" % (current_level, moves)
+    return moves
 
 
 def default(str):
@@ -126,6 +132,8 @@ def readCommand(argv):
                       help=default('The level set to run'), metavar='set', default="original")
     parser.add_option('-m', '--method', dest='method', type='string',
                     help=default('The method set to solve'), metavar='method', default="human")
+    parser.add_option('-g', '--gui', dest='gui',
+                      help=default('Run in CLI mode'), metavar='gui', default="True")
     options, otherjunk = parser.parse_args(argv)
     if len(otherjunk) != 0:
         raise Exception('Command line input not understood: ' + str(otherjunk))
