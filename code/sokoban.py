@@ -122,7 +122,7 @@ def solve(args, myLevel):
     ret = Queue()
     p = Process(target=solveInternal, args=(cache, args.method, ret))
     p.start()
-    p.join(60)
+    p.join(args.timeout)
     moves = ""
     global current_level
 
@@ -165,6 +165,8 @@ def readCommand(argv):
                     help=default('The method set to solve'), metavar='method', default="human")
     parser.add_option('-g', '--gui', dest='gui',
                       help=default('Run in CLI mode'), metavar='gui', default="True")
+    parser.add_option('-t', '--timeout', dest='timeout', type='int',
+                      help=default('Timeout for the method'), metavar='gui', default=60)
     options, otherjunk = parser.parse_args(argv)
     if len(otherjunk) != 0:
         raise Exception('Command line input not understood: ' + str(otherjunk))
