@@ -10,6 +10,7 @@ import sys
 import solver
 import time
 from multiprocessing import Process, Queue
+from memory_profiler import profile
 
 from gui import SokobanGui
 from Level import Level
@@ -95,6 +96,8 @@ def runGame(args):
             else:
                 print "Failed for level %d"%(current_level)
 
+
+# @profile
 def solveInternal(cache, method, ret):
     solution = solver.solver()
     moves = []
