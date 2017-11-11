@@ -5,10 +5,10 @@
 # Last Modified: 31-03-2016
 
 
-# import time
 import pygame
 import sys
 import solver
+import time
 
 from gui import SokobanGui
 from Level import Level
@@ -96,23 +96,29 @@ def runGame(args):
 
 
 def solve(args, myLevel):
+    log_file = open(args.method + '.txt', 'a')
+    start_time = time.time() * 1000
     solution = solver.solver()
     moves = []
+    cache={}
     if args.method == "dfs":
-        moves = solution.dfs(myLevel.getMatrix())
+        moves = solution.dfs(myLevel.getMatrix(), cache=cache)
     elif args.method == "bfs":
-        moves = solution.bfs(myLevel.getMatrix())
+        moves = solution.bfs(myLevel.getMatrix(), cache=cache)
     elif args.method == "ucs":
-        moves = solution.ucs(myLevel.getMatrix())
+        moves = solution.ucs(myLevel.getMatrix(), cache=cache)
     elif args.method == "back":
-        moves = solution.back(myLevel.getMatrix())
+        moves = solution.back(myLevel.getMatrix(), cache=cache)
     elif args.method == "astar":
-        moves = solution.astar(myLevel.getMatrix())
+        moves = solution.astar(myLevel.getMatrix(), cache=cache)
     # elif args.method == "astarid":
     #     moves = solution.astarid(myLevel.getMatrix())
     elif args.method == "dfsid":
         moves = solution.dfsid(myLevel.getMatrix())
-    print "Level: %d, Moves: %s" % (current_level, moves)
+
+    log_file.write(args.set + ',' + str(current_level) + ',' + args.method + ',' + str(time.time() * 1000 - start_time) +
+                   ',' + str(len(moves)) + ',' + str(len(cache)) + '\n')
+    print "Level: %d, Moves: %s Length: %d" % (current_level, moves, len(moves))
     return moves
 
 
