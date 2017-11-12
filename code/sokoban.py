@@ -99,7 +99,7 @@ def runGame(args):
 
 
 # @profile
-def solveInternal(cache, method, ret):
+def solveInternal(cache, method, cost, ret):
     solution = solver.solver()
     moves = []
     if method == "dfs":
@@ -107,11 +107,11 @@ def solveInternal(cache, method, ret):
     elif method == "bfs":
         moves = solution.bfs(myLevel.getMatrix(), cache=cache)
     elif method == "ucs":
-        moves = solution.ucs(myLevel.getMatrix(), cache=cache)
+        moves = solution.ucs(myLevel.getMatrix(), cache=cache, cost=cost)
     elif method == "back":
         moves = solution.back(myLevel.getMatrix(), cache=cache)
     elif method == "astar":
-        moves = solution.astar(myLevel.getMatrix(), cache=cache)
+        moves = solution.astar(myLevel.getMatrix(), cache=cache, cost=cost)
     # elif method == "astarid":
     #     moves = solution.astarid(myLevel.getMatrix())
     elif method == "dfsid":
@@ -124,7 +124,7 @@ def solve(args, myLevel):
     start_time = time.time() * 1000
     cache = {}
     ret = Queue()
-    p = Process(target=solveInternal, args=(cache, args.method, ret))
+    p = Process(target=solveInternal, args=(cache, args.method, args.cost, ret))
     p.start()
     p.join(args.timeout)
     moves = ""
@@ -170,6 +170,8 @@ def readCommand(argv):
                       help=default('Run in CLI mode'), metavar='gui', default="True")
     parser.add_option('-t', '--timeout', dest='timeout', type='int',
                       help=default('Timeout for the method'), metavar='gui', default=60)
+    parser.add_option('-c', '--cost', dest='cost', type='string',
+                      help=default('Cost function to use'), metavar='cost', default="default")
     options, otherjunk = parser.parse_args(argv)
     if len(otherjunk) != 0:
         raise Exception('Command line input not understood: ' + str(otherjunk))

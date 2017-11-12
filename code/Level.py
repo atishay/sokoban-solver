@@ -68,11 +68,11 @@ class Matrix(list):
         y = self.getPlayerPosition()[1]
         def update_valid(item, move, get_two_step):
             if item not in "*#$":
-                return (move, 2)
+                return (move, 'Move')
             if item in "$*" and get_two_step() not in "*#$":
                 # We really prefer pushing the blocks over just roaming around
                 # We do not like moving blocks out of their respective targets
-                return (move, 1) if item is '$' else (move, 10)
+                return (move, "Push") if item is '$' else (move, "PushOut")
             return None
         moves = []
         action_cost = update_valid(self[y][x - 1], 'L', lambda: self[y][x - 2])

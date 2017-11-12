@@ -17,10 +17,29 @@ def distance(method):
 
     return calc
 
+def default(key):
+    if key is 'Move':
+        return 1
+    elif key is 'Push':
+        return 2
+    elif key is 'PushOut':
+        return 10
+
+
+def cost2(key):
+    if key is 'Move':
+        return 2
+    elif key is 'Push':
+        return 1
+    elif key is 'PushOut':
+        return 2
+
+
 class solver():
     costs = {
         "none": lambda key: 1,
-        "default": lambda key: key
+        "default": default,
+        "cost2": cost2
     }
     global distance
     heuristic = {
