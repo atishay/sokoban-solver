@@ -10,7 +10,7 @@ import sys
 import solver
 import time
 from multiprocessing import Process, Queue
-from memory_profiler import profile
+# from memory_profiler import profile
 
 from gui import SokobanGui
 from Level import Level
@@ -102,21 +102,23 @@ def runGame(args):
 def solveInternal(cache, method, cost, ret):
     solution = solver.solver()
     moves = []
+    moves_cache=[]
     if method == "dfs":
-        moves = solution.dfs(myLevel.getMatrix(), cache=cache)
+        moves_cache = solution.dfs(myLevel.getMatrix(), cache=cache)
     elif method == "bfs":
-        moves = solution.bfs(myLevel.getMatrix(), cache=cache)
+        moves_cache = solution.bfs(myLevel.getMatrix(), cache=cache)
     elif method == "ucs":
-        moves = solution.ucs(myLevel.getMatrix(), cache=cache, cost=cost)
+        moves_cache = solution.ucs(myLevel.getMatrix(), cache=cache)
     elif method == "back":
-        moves = solution.back(myLevel.getMatrix(), cache=cache)
+        moves_cache = solution.back(myLevel.getMatrix(), cache=cache)
+
     elif method == "astar":
-        moves = solution.astar(myLevel.getMatrix(), cache=cache, cost=cost)
+        moves_cache = solution.astar(myLevel.getMatrix(), cache=cache, cost=cost)
     # elif method == "astarid":
     #     moves = solution.astarid(myLevel.getMatrix())
     elif method == "dfsid":
-        moves = solution.dfsid(myLevel.getMatrix())
-    ret.put(moves)
+        moves_cache = solution.dfsid(myLevel.getMatrix())
+    ret.put(moves_cache)
     # return moves
 
 def solve(args, myLevel):
@@ -128,20 +130,24 @@ def solve(args, myLevel):
     p.start()
     p.join(args.timeout)
     moves = ""
+    moves_cache = ""
     global current_level
 
     if not ret.empty():
-        moves = ret.get()
+        moves_cache = ret.get()
+        print len(moves_cache)
+        print "Level: %d, Moves: %s Length: %d" % (current_level, moves_cache[0], len(moves_cache[0]))
         log_file.write(args.set + ',' + str(current_level) + ',' + args.method + ',' + str(time.time() * 1000 - start_time) +
-                       ',' + str(len(moves)) + ',' + str(len(cache)) + '\n')
+                       ',' + str(len(moves_cache[0])) + ',' + str(moves_cache[1]) + '\n')
+        return moves_cache[0]
     else:
-        print "Timeout"
-        log_file.write(args.set + ',' + str(current_level) + ',' + args.method + ',' + "999999" +
-                       ',' + str(len(moves)) + ',' + str(len(cache)) + '\n')
-
+        print "Level: %d, Moves: %s Length: %d Timeout" % (current_level, '', 0)
+        log_file.write(args.set + ',' + str(current_level) + ',' + args.method + ',' + "Timeout" +
+                       ',' + '0' + ',' + '0' + '\n')
     # solveInternal(method=args.method, cache=cache)
-    print "Level: %d, Moves: %s Length: %d" % (current_level, moves, len(moves))
-    return moves
+    # print "Level: %d, Moves: %s Length: %d" % (current_level, moves, len(moves))
+    # return moves
+    return ''
 
 
 def default(str):
@@ -169,7 +175,7 @@ def readCommand(argv):
     parser.add_option('-g', '--gui', dest='gui',
                       help=default('Run in CLI mode'), metavar='gui', default="True")
     parser.add_option('-t', '--timeout', dest='timeout', type='int',
-                      help=default('Timeout for the method'), metavar='gui', default=60)
+                      help=default('Timeout for the method'), metavar='gui', default=900)
     parser.add_option('-c', '--cost', dest='cost', type='string',
                       help=default('Cost function to use'), metavar='cost', default="default")
     options, otherjunk = parser.parse_args(argv)
