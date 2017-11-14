@@ -85,7 +85,7 @@ class solver():
             state, actions = stack.pop()
             cache[state.toString()] = len(actions)
             if state.isSuccess():
-                return actions
+                return (actions,len(cache))
             if state.isFailure():
                 continue
             if len(actions) is maxDepth:
@@ -99,7 +99,7 @@ class solver():
                 # if next((x for (x, _) in stack if x.toString() is successor.toString()), None) is not None:
                 #     continue
                 stack.append((successor, actions + action))
-        return ""
+        return ("",0)
 
     def back(self, startState, maxDepth=130, cache={}):
         options = []
@@ -124,8 +124,8 @@ class solver():
                 #     continue
                 stack.append((successor, actions + action))
         if len(options) is 0:
-            return ""
-        return min(options, key=lambda x: len(x))
+            return ("",0)
+        return (min(options, key=lambda x: len(x)), len(cache))
 
     def bfs(self, startState, maxDepth=50, cache={}):
         return self.ucs(startState, cache=cache, cost="none")
@@ -146,7 +146,7 @@ class solver():
             actions = action_map[state.toString()]
             cache[state.toString()] = len(actions)
             if state.isSuccess():
-                return actions
+                return (actions,len(cache))
             if state.isFailure():
                 continue
             if cost >= maxCost:
@@ -162,7 +162,7 @@ class solver():
                     action_map[successor.toString()] = actions + action
                 successor.h = h(successor, self.cache)
                 queue.update(successor, cost + costCalc(cost_delta, self.cache) + successor.h - state.h)
-        return ""
+        return ("",0)
 
     def dfsid(self, startState, maxDepth=100):
         i = 1
