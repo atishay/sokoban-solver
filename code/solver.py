@@ -34,12 +34,20 @@ def distance(method):
     def calc(state, cache):
         # TODO: We could cache a lot of this. In most states
         # the position of most boxes don't change.
+        if 'min_distance' not in cache:
+            cache['min_distance'] = {}
         player = state.getPlayerPosition()
         boxes = state.getBoxes()
         targets = state.getTargets()
         total = 0
-        for b in boxes:
-            total += min([method(b, t) for t in targets] or [0])
+        key = (",".join([str(x[0]) + "-" + str(x[1]) for x in boxes]),
+               ",".join([str(x[0]) + "-" + str(x[1]) for x in targets]))
+        if key in cache['min_distance']:
+            total = cache['min_distance'][key]
+        else:
+            for b in boxes:
+                total += min([method(b, t) for t in targets] or [0])
+            cache['min_distance'][key] = total
         total += sum([method(player, b) for b in boxes] or [0])
         return total
 
