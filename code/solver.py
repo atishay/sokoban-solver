@@ -1,9 +1,37 @@
 from collections import deque
 import heapq
+import numpy as np
+from hungarian import Hungarian
 
+def hungarianDistance(method):
+    def calc(state, cache):
+        if 'hungarian' not in cache:
+            cache['hungarian'] = {}
+        player = state.getPlayerPosition()
+        boxes = state.getBoxes()
+        targets = state.getTargets()
+        key = (",".join([str(x[0]) + "-" + str(x[1]) for x in boxes]),
+               ",".join([str(x[0]) + "-" + str(x[1]) for x in targets]))
+        total = 0
+        if key in cache['hungarian']:
+            total = cache['hungarian'][key]
+        else :
+            distance_list = []
+            for b in boxes:
+                distance_list.append([method(b, t) for t in targets])
+            if len(distance_list) is 0:
+                return 1
+            array = np.array(distance_list, dtype='float64')
+            hungarian = Hungarian(array)
+            hungarian.calculate()
+            total = hungarian.get_total_potential()
+            cache['hungarian'][key] = total
+        total += sum([method(player, b) for b in boxes] or [0])
+        return total
+    return calc
 
 def distance(method):
-    def calc(state):
+    def calc(state, cache):
         # TODO: We could cache a lot of this. In most states
         # the position of most boxes don't change.
         player = state.getPlayerPosition()
@@ -12,12 +40,12 @@ def distance(method):
         total = 0
         for b in boxes:
             total += min([method(b, t) for t in targets] or [0])
-        total += min([method(player, b) for b in boxes] or [0])
+        total += sum([method(player, b) for b in boxes] or [0])
         return total
 
     return calc
 
-def default(key):
+def default(key, cache):
     if key is 'Move':
         return 1
     elif key is 'Push':
@@ -26,7 +54,7 @@ def default(key):
         return 10
 
 
-def cost2(key):
+def cost2(key, cache):
     if key is 'Move':
         return 2
     elif key is 'Push':
@@ -36,16 +64,21 @@ def cost2(key):
 
 
 class solver():
+    cache = {}
     costs = {
-        "none": lambda key: 1,
+        "none": lambda key, cache: 1,
         "default": default,
         "cost2": cost2
     }
     global distance
     heuristic = {
         "manhatten": distance(lambda a, b: abs(a[0] - b[0]) + abs(a[1] - b[1])),
-        "none": lambda x: 0
+        "none": lambda x: 0,
+        "hungarian": hungarianDistance(lambda a, b: abs(a[0] - b[0]) + abs(a[1] - b[1]))
     }
+    def refresh(self):
+        self.cache = {}
+
     def dfs(self, startState, maxDepth=50, cache={}):
         stack = deque([(startState, "")])
         while len(stack) > 0:
@@ -100,12 +133,12 @@ class solver():
     def ucs(self, startState, cost="default", maxCost=500, cache={}):
         return self.astar(startState, cost=cost, maxCost=maxCost, cache=cache, heuristic="none")
 
-    def astar(self, startState, maxCost=1000, cost="default", heuristic="manhatten", cache={}):
+    def astar(self, startState, maxCost=1000, cost="default", heuristic="hungarian", cache={}):
         h = self.heuristic[heuristic]
         costCalc = self.costs[cost]
         queue = PriorityQueue()
         action_map = {}
-        startState.h = h(startState)
+        startState.h = h(startState, self.cache)
         queue.update(startState, startState.h)
         action_map[startState.toString()] = ""
         while not queue.empty():
@@ -127,8 +160,8 @@ class solver():
                 ) in action_map else None
                 if not old or len(old) > len(actions) + 1:
                     action_map[successor.toString()] = actions + action
-                successor.h = h(successor)
-                queue.update(successor, cost + costCalc(cost_delta) + successor.h - state.h)
+                successor.h = h(successor, self.cache)
+                queue.update(successor, cost + costCalc(cost_delta, self.cache) + successor.h - state.h)
         return ""
 
     def dfsid(self, startState, maxDepth=100):

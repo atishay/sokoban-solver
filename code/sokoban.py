@@ -99,8 +99,9 @@ def runGame(args):
 
 
 # @profile
-def solveInternal(cache, method, cost, ret):
+def solveInternal(cache, method, cost, heuristic, ret):
     solution = solver.solver()
+    solution.refresh()
     moves = []
     if method == "dfs":
         moves = solution.dfs(myLevel.getMatrix(), cache=cache)
@@ -111,7 +112,7 @@ def solveInternal(cache, method, cost, ret):
     elif method == "back":
         moves = solution.back(myLevel.getMatrix(), cache=cache)
     elif method == "astar":
-        moves = solution.astar(myLevel.getMatrix(), cache=cache, cost=cost)
+        moves = solution.astar(myLevel.getMatrix(), cache=cache, cost=cost, heuristic=heuristic)
     # elif method == "astarid":
     #     moves = solution.astarid(myLevel.getMatrix())
     elif method == "dfsid":
@@ -124,7 +125,7 @@ def solve(args, myLevel):
     start_time = time.time() * 1000
     cache = {}
     ret = Queue()
-    p = Process(target=solveInternal, args=(cache, args.method, args.cost, ret))
+    p = Process(target=solveInternal, args=(cache, args.method, args.cost, args.heuristic, ret))
     p.start()
     p.join(args.timeout)
     moves = ""
@@ -172,6 +173,8 @@ def readCommand(argv):
                       help=default('Timeout for the method'), metavar='gui', default=60)
     parser.add_option('-c', '--cost', dest='cost', type='string',
                       help=default('Cost function to use'), metavar='cost', default="default")
+    parser.add_option('-f', '--heuristic', dest='heuristic', type='string',
+                      help=default('Heuristic function to use'), metavar='heuristic', default="hungarian")
     options, otherjunk = parser.parse_args(argv)
     if len(otherjunk) != 0:
         raise Exception('Command line input not understood: ' + str(otherjunk))
