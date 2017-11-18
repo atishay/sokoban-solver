@@ -81,7 +81,7 @@ class solver():
     global distance
     heuristic = {
         "manhatten": distance(lambda a, b: abs(a[0] - b[0]) + abs(a[1] - b[1])),
-        "none": lambda x: 0,
+        "none": lambda x, y: 0,
         "hungarian": hungarianDistance(lambda a, b: abs(a[0] - b[0]) + abs(a[1] - b[1]))
     }
     def refresh(self):
