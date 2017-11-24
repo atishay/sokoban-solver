@@ -1,7 +1,11 @@
 from collections import deque
 import heapq
+import sys
 import numpy as np
 from hungarian import Hungarian
+import cPickle as pickle
+
+sys.setrecursionlimit(100000)
 
 def hungarianDistance(method):
     def calc(state, cache):
@@ -109,14 +113,16 @@ class solver():
                 stack.append((successor, actions + action))
         return ("",0)
 
-    def back(self, startState, maxDepth=130, cache={}):
+    def back(self, startState, maxDepth=130, cache={}, p={}, op={}, m={}, filename="file.pkl"):
         options = []
         stack = deque([(startState, "")])
+        success = False
         while len(stack) > 0:
-            state, actions = stack.pop()
+            state, actions = stack.popleft()
             cache[state.toString()] = len(actions)
             if state.isSuccess():
                 options.append(actions);
+                success = state.toString()
                 continue
             if state.isFailure():
                 continue
@@ -124,16 +130,40 @@ class solver():
                 continue
             for (action, _) in state.getPossibleActions():
                 successor = state.successor(action)
+                if not successor.toString() in p:
+                    p[successor.toString()] = []
+                p[successor.toString()].append((state.toString(), action))
                 # Don't go to an explored state
-                if successor.toString() in cache and cache[successor.toString()] <= len(actions) + 1:
+                if len(p[successor.toString()]) > 1:
+                    #  in cache and cache[successor.toString()] <= len(actions) + 1:
                     continue
                 # # Don't go to a state already marked for visit
                 # if next((x for (x, _) in stack if x.toString() is successor.toString()), None) is not None:
                 #     continue
                 stack.append((successor, actions + action))
+        if success:
+            self.findStates(success, m, p, "")
+        # If in p and not in m then it is a failure state.
+        for key in p:
+            if key not in m:
+                m[key] = False
+        with open(filename + str(len(m)) + "-weight.pkl", 'wb') as output:
+            pickle.dump(m, output, pickle.HIGHEST_PROTOCOL)
         if len(options) is 0:
             return ("",0)
         return (min(options, key=lambda x: len(x)), len(cache))
+
+    def findStates(self, state, m, p, a):
+        q = deque([(state, a)])
+        while len(q) > 0:
+            v = q.popleft()
+            s = v[0]
+            a = v[1]
+            if s not in m:
+                m[s] = a
+                if s in p:
+                    for pstate in p[s]:
+                        q.append((pstate[0], pstate[1] + a))
 
     def bfs(self, startState, maxDepth=50, cache={}):
         return self.ucs(startState, cache=cache, cost="none")

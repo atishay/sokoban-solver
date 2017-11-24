@@ -99,7 +99,7 @@ def runGame(args):
 
 
 # @profile
-def solveInternal(cache, method, cost, heuristic, ret):
+def solveInternal(cache, method, cost, heuristic, ret, filename):
     solution = solver.solver()
     solution.refresh()
     moves = []
@@ -111,7 +111,7 @@ def solveInternal(cache, method, cost, heuristic, ret):
     elif method == "ucs":
         moves_cache = solution.ucs(myLevel.getMatrix(), cache=cache)
     elif method == "back":
-        moves_cache = solution.back(myLevel.getMatrix(), cache=cache)
+        moves_cache = solution.back(myLevel.getMatrix(), cache=cache, filename=filename)
 
     elif method == "astar":
         moves_cache = solution.astar(myLevel.getMatrix(), cache=cache, cost=cost, heuristic=heuristic)
@@ -127,12 +127,13 @@ def solve(args, myLevel):
     start_time = time.time() * 1000
     cache = {}
     ret = Queue()
-    p = Process(target=solveInternal, args=(cache, args.method, args.cost, args.heuristic, ret))
+    global current_level
+    p = Process(target=solveInternal, args=(cache, args.method, args.cost,
+                                            args.heuristic, ret, args.set + "-" + str(current_level) + "-"))
     p.start()
     p.join(args.timeout)
     moves = ""
     moves_cache = ""
-    global current_level
 
     if not ret.empty():
         moves_cache = ret.get()
