@@ -20,12 +20,12 @@ from keras.layers.core import Activation, Dropout, Flatten
 from keras.layers.convolutional import UpSampling2D, Convolution2D
 
 #Script Parameters
-dimension = 30
+dimension = 32
 input_dim = dimension * dimension
 gamma = 0.99
 update_frequency = 10
 learning_rate = 0.001
-resume = True
+resume = False
 render = False
 level_set = "test"
 min_level = 19
@@ -67,29 +67,21 @@ def get_as_numpy(x):
   height = len(x)
   padWidth = (dimension - width) / 2
   padHeight = (dimension - height) / 2
-  I = np.zeros([dimension, dimension, 4], dtype=float)
+  I = np.zeros([dimension, dimension], dtype=float)
   for i, y in enumerate(x):
     for j, z in enumerate(y):
-      # if z is '#':
-        # I[padWidth + i, padHeight + j, 0] = 1
-      if z is '@':
-        I[padWidth + i, padHeight + j, 0] = 1
-        I[padWidth + i, padHeight + j, 1] = 1
-        I[padWidth + i, padHeight + j, 2] = 0
-        I[padWidth + i, padHeight + j, 3] = 0
-      # elif z is '+':
-      #   I[padWidth + i, padHeight + j, 1] = 1
-      #   I[padWidth + i, padHeight + j, 2] = 1
+      if z is '#':
+        I[padWidth + i, padHeight + j] = 0.2
+      elif z is '@':
+        I[padWidth + i, padHeight + j] = 1
+      elif z is '+':
+        I[padWidth + i, padHeight + j] = 0.6
       elif z is '$':
-        I[padWidth + i, padHeight + j, 0] = 0.5
-        I[padWidth + i, padHeight + j, 1] = 0.5
-        I[padWidth + i, padHeight + j, 2] = 1
-        I[padWidth + i, padHeight + j, 3] = 1
-      # elif z is '.':
-      #   I[padWidth + i, padHeight + j, 3] = 1
-      # elif z is '*':
-      #   I[padWidth + i, padHeight + j, 2] = 1
-      #   I[padWidth + i, padHeight + j, 3] = 1
+        I[padWidth + i, padHeight + j] = 0.8
+      elif z is '.':
+        I[padWidth + i, padHeight + j] = 0.4
+      elif z is '*':
+        I[padWidth + i, padHeight + j] = 0.5
 
   # I = I[35:195]
   # I = I[::2,::2,0]
@@ -131,18 +123,18 @@ def discount_rewards(r):
 #Define the main model (WIP)
 
 
-def learning_model(input_dim=dimension * dimension * 4, model_type=0):
+def learning_model(input_dim=dimension * dimension, model_type=1):
   model = Sequential()
   if model_type == 0:
-    model.add(Reshape((1, dimension, dimension, 4), input_shape=(input_dim,)))
+    model.add(Reshape((1, dimension, dimension), input_shape=(input_dim,)))
     model.add(Flatten())
-    model.add(Dense(10, activation='relu'))
+    model.add(Dense(200, activation='relu'))
     model.add(Dense(number_of_inputs, activation='softmax'))
     opt = RMSprop(lr=learning_rate)
   else:
-    model.add(Reshape((1, dimension, dimension, 4), input_shape=(input_dim,)))
-    model.add(Convolution2D(32, 9, 9, subsample=(4, 4),
-                            border_mode='same', activation='relu', init='he_uniform'))
+    model.add(Reshape((1, dimension, dimension), input_shape=(input_dim,)))
+    model.add(Convolution2D(8, 3, 3, border_mode='same',
+                            activation='relu', init='he_uniform'))
     model.add(Flatten())
     model.add(Dense(32, activation='relu', init='he_uniform'))
     model.add(Dense(16, activation='relu', init='he_uniform'))
@@ -166,7 +158,7 @@ while True:
   action = np.random.choice(number_of_inputs, 1, p=aprob)[0]
   y = np.zeros([number_of_inputs])
   y[action] = 1
-  dlogps.append(np.array(y).astype('float32'))
+  dlogps.append(np.array(y).astype('float32') - aprob)
   observation, reward, done = perform_action(
       observation, action)  # env.step(action)
   reward_sum += reward
@@ -219,5 +211,5 @@ while True:
             episode_number, current_level,  ('Defeat!' if reward == -1 else 'VICTORY!'), victory))
         print observation.actions
         victory = 0
-        print aprob
+        # print aprob
     observation = loadRandomLevel()
