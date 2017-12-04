@@ -28,9 +28,9 @@ learning_rate = 0.001
 resume = False
 render = False
 level_set = "test"
-min_level = 19
-max_level = 19
-num_actions_for_fail = 10
+min_level = 6
+max_level = 6
+num_actions_for_fail = 30
 current_level = 0
 last_level = 0
 
