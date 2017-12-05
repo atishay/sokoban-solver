@@ -119,36 +119,39 @@ def solveInternal(cache, method, cost, heuristic, ret, filename):
     #     moves = solution.astarid(myLevel.getMatrix())
     elif method == "dfsid":
         moves_cache = solution.dfsid(myLevel.getMatrix())
-    ret.put(moves_cache)
-    # return moves
+    elif method == "nn":
+        moves_cache = solution.nn(myLevel.getMatrix())
+    # ret.put(moves_cache)
+    return moves_cache[0]
 
 def solve(args, myLevel):
-    log_file = open(args.method + '.txt', 'a')
-    start_time = time.time() * 1000
-    cache = {}
-    ret = Queue()
-    global current_level
-    p = Process(target=solveInternal, args=(cache, args.method, args.cost,
-                                            args.heuristic, ret, args.set + "-" + str(current_level) + "-"))
-    p.start()
-    p.join(args.timeout)
-    moves = ""
-    moves_cache = ""
+    return solveInternal({}, args.method, args.cost, args.heuristic, {}, "temp")
+    # log_file = open(args.method + '.txt', 'a')
+    # start_time = time.time() * 1000
+    # cache = {}
+    # ret = Queue()
+    # global current_level
+    # p = Process(target=solveInternal, args=(cache, args.method, args.cost,
+    #                                         args.heuristic, ret, args.set + "-" + str(current_level) + "-"))
+    # p.start()
+    # p.join(args.timeout)
+    # moves = ""
+    # moves_cache = ""
 
-    if not ret.empty():
-        moves_cache = ret.get()
-        print "Level: %d, Moves: %s Length: %d" % (current_level, moves_cache[0], len(moves_cache[0]))
-        log_file.write(args.set + ',' + str(current_level) + ',' + args.method + ',' + str(time.time() * 1000 - start_time) +
-                       ',' + str(len(moves_cache[0])) + ',' + str(moves_cache[1]) + '\n')
-        return moves_cache[0]
-    else:
-        print "Level: %d, Moves: %s Length: %d Timeout" % (current_level, '', 0)
-        log_file.write(args.set + ',' + str(current_level) + ',' + args.method + ',' + "Timeout" +
-                       ',' + '0' + ',' + '0' + '\n')
-    # solveInternal(method=args.method, cache=cache)
-    # print "Level: %d, Moves: %s Length: %d" % (current_level, moves, len(moves))
-    # return moves
-    return ''
+    # if not ret.empty():
+    #     moves_cache = ret.get()
+    #     print "Level: %d, Moves: %s Length: %d" % (current_level, moves_cache[0], len(moves_cache[0]))
+    #     log_file.write(args.set + ',' + str(current_level) + ',' + args.method + ',' + str(time.time() * 1000 - start_time) +
+    #                    ',' + str(len(moves_cache[0])) + ',' + str(moves_cache[1]) + '\n')
+    #     return moves_cache[0]
+    # else:
+    #     print "Level: %d, Moves: %s Length: %d Timeout" % (current_level, '', 0)
+    #     log_file.write(args.set + ',' + str(current_level) + ',' + args.method + ',' + "Timeout" +
+    #                    ',' + '0' + ',' + '0' + '\n')
+    # # solveInternal(method=args.method, cache=cache)
+    # # print "Level: %d, Moves: %s Length: %d" % (current_level, moves, len(moves))
+    # # return moves
+    # return ''
 
 
 def default(str):
@@ -193,11 +196,11 @@ if __name__ == '__main__':
     The main function called when sokoban.py is run
     from the command line:
 
-    > python pacman.py
+    > python sokoban.py
 
     See the usage string for more details.
 
-    > python pacman.py --help
+    > python sokoban.py --help
     """
     args = readCommand(sys.argv[1:])  # Get game components based on input
     runGame(args)

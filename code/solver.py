@@ -3,6 +3,7 @@ import heapq
 import sys
 import numpy as np
 from hungarian import Hungarian
+from supervised import getAction
 import cPickle as pickle
 
 sys.setrecursionlimit(100000)
@@ -211,6 +212,26 @@ class solver():
             elif i < maxDepth:
                 i = i + 1
 
+    def nn(self, startState, cache={}):
+        actions = ""
+        state = startState
+        while len(actions) < 1000:
+            actionList = getAction(state)
+
+            if state.toString() not in cache:
+                cache[state.toString()] = -1
+            cache[state.toString()] = cache[state.toString()] + 1
+            if cache[state.toString()] is 4:
+                cache[state.toString()] = 0
+
+            action = actionList[cache[state.toString()]]
+            actions += action
+            state = state.successor(action)
+            if state.isSuccess():
+                print actions
+                return (actions, 0)
+        print actions
+        return (actions, 0)
 
     # def astarid(self):
     #     pass
