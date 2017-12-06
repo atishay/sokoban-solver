@@ -122,10 +122,11 @@ def solveInternal(cache, method, cost, heuristic, ret, filename):
     elif method == "nn":
         moves_cache = solution.nn(myLevel.getMatrix())
     # ret.put(moves_cache)
+    print moves_cache
     return moves_cache[0]
 
 def solve(args, myLevel):
-    return solveInternal({}, args.method, args.cost, args.heuristic, {}, "temp")
+    return solveInternal({}, args.method, args.cost, args.heuristic, {}, args.set + "-" + str(current_level) + "-")
     # log_file = open(args.method + '.txt', 'a')
     # start_time = time.time() * 1000
     # cache = {}
