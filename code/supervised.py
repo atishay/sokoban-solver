@@ -30,7 +30,6 @@ gamma = 0.99
 update_frequency = 10
 learning_rate = 0.001
 resume = False
-render = False
 data = {}
 number_of_inputs = 4
 
@@ -66,27 +65,17 @@ def get_as_numpy(x):
   return I
 
 #Define the main model (WIP)
-def learning_model(input_dim=dimension * dimension, model_type=1):
+def learning_model(input_dim=dimension * dimension):
   model = Sequential()
-  if model_type == 0:
-    model.add(Reshape((1, dimension, dimension), input_shape=(input_dim,)))
-    model.add(Flatten())
-    model.add(Dense(200, activation='relu'))
-    model.add(Dense(number_of_inputs, activation='softmax'))
-    opt = RMSprop(lr=learning_rate)
-  else:
-    model.add(Reshape((1, dimension, dimension), input_shape=(input_dim,)))
-    model.add(Conv2D(32, (3, 3), padding='same', kernel_initializer='he_uniform', activation="relu"))
-    model.add(keras.layers.Dropout(0.25))
-    # model.add(Conv2D(64, (3, 3), padding='same', activation="relu"))
-    model.add(Conv2D(64, (3, 3), padding='same', activation="relu"))
-    model.add(MaxPooling2D(data_format="channels_first", pool_size=(2, 2)))
-    model.add(Dropout(0.5))
-    model.add(Flatten())
-    model.add(Dense(128, kernel_initializer="he_uniform", activation="relu"))
-    model.add(Dense(number_of_inputs, activation='softmax'))
-    opt = Adam(lr=learning_rate)
-  model.compile(loss='categorical_crossentropy', optimizer=opt)
+  model.add(Reshape((1, dimension, dimension), input_shape=(input_dim,)))
+  model.add(Conv2D(8, (3, 3), padding='same', kernel_initializer='he_uniform', activation="relu"))
+  model.add(Flatten())
+  model.add(Dense(32, kernel_initializer="he_uniform", activation="relu"))
+  model.add(Dense(16, kernel_initializer="he_uniform", activation="relu"))
+  model.add(Dense(number_of_inputs, activation='softmax'))
+  opt = Adam(lr=learning_rate)
+  model.compile(loss='categorical_crossentropy',
+                optimizer=opt, metrics=['accuracy'])
   if resume == True:
     model.load_weights('sokoban_checkpoint.hdf5')
   return model
@@ -108,13 +97,9 @@ def getAction(s):
   l.reverse()
   return "".join(l)
 
-
-# state = "##############\n#   .$    @  #\n##############"
-# getAction(state);
-
 if __name__ == '__main__':
   load("test-0-8-weight.pkl")
-  # load("test-1-37476-weight.pkl")
+  load("test-1-37476-weight.pkl")
   load("test-2-41617-weight.pkl")
   load("test-3-43652-weight.pkl")
   load("test-4-43837-weight.pkl")
@@ -124,10 +109,10 @@ if __name__ == '__main__':
   load("test-8-45029-weight.pkl")
   load("test-9-48413-weight.pkl")
   load("test-10-56545-weight.pkl")
-  # load("test-11-1060338-weight.pkl")
-  # load("test-12-1085133-weight.pkl")
-  # load("test-13-1134657-weight.pkl")
-  # load("test-14-1144167-weight.pkl")
+  load("test-11-1060338-weight.pkl")
+  load("test-12-1085133-weight.pkl")
+  load("test-13-1134657-weight.pkl")
+  load("test-14-1144167-weight.pkl")
   load("magic_sokoban6-1-2340-weight.pkl")
   load("magic_sokoban6-2-1267-weight.pkl")
   load("magic_sokoban6-3-52620-weight.pkl")
@@ -135,19 +120,17 @@ if __name__ == '__main__':
   load("magic_sokoban6-5-29500-weight.pkl")
   load("magic_sokoban6-6-22410-weight.pkl")
   load("magic_sokoban6-7-23044-weight.pkl")
-  # load("magic_sokoban6-8-193683-weight.pkl")
-  # load("magic_sokoban6-9-313548-weight.pkl")
+  load("magic_sokoban6-8-193683-weight.pkl")
+  load("magic_sokoban6-9-313548-weight.pkl")
   # Augment the data with 3 rotations and 2 mirrors
 
   # We train if run as the main function
   data = {k: v for k, v in data.items() if v is not False and len(v) > 0}
-  print "Training from %d training points" % (len(data))
   keys = data.keys()
   key = "LRUD"
   for multiplier in range(8):
     for i in keys:
       o = data[i]
-      # i, o = random.choice(list(data.items()))
       x = get_as_numpy(i)
       if len(o) is 0:
         continue;
@@ -184,9 +167,12 @@ if __name__ == '__main__':
   checkpointer = ModelCheckpoint(
       filepath='sokoban_checkpoint.hdf5', verbose=2, save_best_only=True)
   history = model.fit(x=np.array(xs), y=np.array(
-      ys), epochs=50, validation_split=0.2, verbose=2, batch_size=128, callbacks=[checkpointer])
+      ys), epochs=30, validation_split=0.1, verbose=2, batch_size=128, callbacks=[checkpointer])
   # list all data in history
-  print(history.history.keys())
+  np.savetxt("loss.txt", np.array(history.history["loss"]), delimiter=",")
+  np.savetxt("val_loss.txt", np.array(history.history["val_loss"]), delimiter=",")
+  np.savetxt("acc.txt", np.array(history.history["acc"]), delimiter=",")
+  np.savetxt("val_acc.txt", np.array(history.history["val_acc"]), delimiter=",")
   # summarize history for accuracy
   plt.plot(history.history['acc'])
   plt.plot(history.history['val_acc'])
