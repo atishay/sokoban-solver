@@ -74,10 +74,10 @@ def learning_model(input_dim=dimension * dimension):
   model.add(Dense(16, kernel_initializer="he_uniform", activation="relu"))
   model.add(Dense(number_of_inputs, activation='softmax'))
   opt = Adam(lr=learning_rate)
-  model.compile(loss='categorical_crossentropy',
-                optimizer=opt, metrics=['accuracy'])
   if resume == True:
     model.load_weights('sokoban_checkpoint.hdf5')
+  else:
+    model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['accuracy'])
   return model
 xs = []
 ys = []
@@ -167,7 +167,7 @@ if __name__ == '__main__':
   checkpointer = ModelCheckpoint(
       filepath='sokoban_checkpoint.hdf5', verbose=2, save_best_only=True)
   history = model.fit(x=np.array(xs), y=np.array(
-      ys), epochs=30, validation_split=0.1, verbose=2, batch_size=128, callbacks=[checkpointer])
+      ys), epochs=100, validation_split=0.1, verbose=2, batch_size=128, callbacks=[checkpointer])
   # list all data in history
   np.savetxt("loss.txt", np.array(history.history["loss"]), delimiter=",")
   np.savetxt("val_loss.txt", np.array(history.history["val_loss"]), delimiter=",")
