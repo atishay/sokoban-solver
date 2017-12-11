@@ -29,7 +29,7 @@ input_dim = dimension * dimension
 gamma = 0.99
 update_frequency = 10
 learning_rate = 0.001
-resume = False
+resume = True
 data = {}
 number_of_inputs = 4
 
