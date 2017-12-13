@@ -68,7 +68,7 @@ def runGame(args):
     if args.method == "human":
         while True:
             for event in pygame.event.get():
-                print count
+                
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_LEFT:
                         count+=1
