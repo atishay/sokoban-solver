@@ -11,6 +11,8 @@ class Matrix(list):
     size = None
     target_found = False
     _string = None
+    moves = None
+    actions = ""
     def getSize(self):
         """
         Gets the size of the matrix (The maximum width/height)
