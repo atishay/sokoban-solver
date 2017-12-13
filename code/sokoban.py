@@ -40,6 +40,7 @@ def initLevel(level_set,level):
     myLevel = Level(level_set,level)
 
     # Draw this level
+    
     gui.drawLevel(myLevel.getMatrix())
 
 
@@ -47,8 +48,11 @@ def runGame(args):
     """
     Execute the game
     """
+
     global gui
+    
     gui = SokobanGui()
+
     global current_level
     current_level = args.level
     global level_set
@@ -56,22 +60,32 @@ def runGame(args):
 
 
     # Initialize Level
+    if current_level==30:
+        pygame.quit()
+        sys.exit()
     initLevel(level_set,current_level)
+    count=0
     if args.method == "human":
         while True:
             for event in pygame.event.get():
+                print count
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_LEFT:
+                        count+=1
                         movePlayer("L",myLevel)
                     elif event.key == pygame.K_RIGHT:
+                        count+=1
                         movePlayer("R",myLevel)
                     elif event.key == pygame.K_DOWN:
+                        count+=1
                         movePlayer("D",myLevel)
                     elif event.key == pygame.K_UP:
+                        count+=1
                         movePlayer("U",myLevel)
                     elif event.key == pygame.K_u:
                         gui.drawLevel(myLevel.undo())
                     elif event.key == pygame.K_r:
+
                         initLevel(level_set,current_level)
                     elif event.key == pygame.K_ESCAPE:
                         pygame.quit()
@@ -82,12 +96,15 @@ def runGame(args):
     else:
         old_level = current_level - 1
         while old_level is current_level - 1:
+            if current_level==30:
+                pygame.quit()
+                sys.exit()
             old_level = current_level
             moves = solve(args, myLevel)
             if moves is not "":
                 for move in moves:
                     movePlayer(move, myLevel)
-                    if args.gui == "True":
+                    if args.gui == True:
                         pygame.time.wait(100)
                         for event in pygame.event.get():
                             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
@@ -95,7 +112,13 @@ def runGame(args):
                                 sys.exit()
             else:
                 print "Failed for level %d"%(current_level)
+                
                 current_level = current_level + 1
+                if current_level==30:
+                    pygame.quit()
+                    sys.exit()
+                initLevel(level_set,current_level)
+
 
 
 # @profile
@@ -124,6 +147,12 @@ def solveInternal(cache, method, cost, heuristic, ret):
 
 def solve(args, myLevel):
     log_file = open(args.method + '.txt', 'a')
+    if args.method=='ucs':
+        log_file = open(args.method + '_' + args.cost + '.txt', 'a')
+
+    if args.method=='astar':
+        log_file = open(args.method + '_' + args.heuristic + '.txt', 'a')
+
     start_time = time.time() * 1000
     cache = {}
     ret = Queue()
@@ -173,9 +202,9 @@ def readCommand(argv):
     parser.add_option('-m', '--method', dest='method', type='string',
                     help=default('The method set to solve'), metavar='method', default="human")
     parser.add_option('-g', '--gui', dest='gui',
-                      help=default('Run in CLI mode'), metavar='gui', default="True")
+                      help=default('Run in CLI mode'), metavar='gui', default=False)
     parser.add_option('-t', '--timeout', dest='timeout', type='int',
-                      help=default('Timeout for the method'), metavar='gui', default=900)
+                      help=default('Timeout for the method'), metavar='gui', default=float('inf'))
     parser.add_option('-c', '--cost', dest='cost', type='string',
                       help=default('Cost function to use'), metavar='cost', default="default")
     parser.add_option('-f', '--heuristic', dest='heuristic', type='string',

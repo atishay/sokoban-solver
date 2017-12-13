@@ -2,6 +2,7 @@ from collections import deque
 import heapq
 import numpy as np
 from hungarian import Hungarian
+import math
 
 def hungarianDistance(method):
     def calc(state, cache):
@@ -82,12 +83,14 @@ class solver():
     heuristic = {
         "manhatten": distance(lambda a, b: abs(a[0] - b[0]) + abs(a[1] - b[1])),
         "none": lambda x, y: 0,
-        "hungarian": hungarianDistance(lambda a, b: abs(a[0] - b[0]) + abs(a[1] - b[1]))
+        "hungarian": hungarianDistance(lambda a, b: abs(a[0] - b[0]) + abs(a[1] - b[1])),
+        "euclidean": distance(lambda x, y: math.sqrt((x[0]-y[0])**2 + (x[1]-y[1])**2)),
+        "hungarian_euclidean": hungarianDistance(lambda x, y: math.sqrt((x[0]-y[0])**2 + (x[1]-y[1])**2))
     }
     def refresh(self):
         self.cache = {}
 
-    def dfs(self, startState, maxDepth=50, cache={}):
+    def dfs(self, startState, maxDepth, cache={}):
         stack = deque([(startState, "")])
         while len(stack) > 0:
             state, actions = stack.pop()
@@ -109,7 +112,7 @@ class solver():
                 stack.append((successor, actions + action))
         return ("",0)
 
-    def back(self, startState, maxDepth=130, cache={}):
+    def back(self, startState, maxDepth=float('inf'), cache={}):
         options = []
         stack = deque([(startState, "")])
         while len(stack) > 0:
@@ -135,7 +138,7 @@ class solver():
             return ("",0)
         return (min(options, key=lambda x: len(x)), len(cache))
 
-    def bfs(self, startState, maxDepth=50, cache={}):
+    def bfs(self, startState, maxDepth=float('inf'), cache={}):
         return self.ucs(startState, cache=cache, cost="none")
 
     def ucs(self, startState, cost="default", maxCost=500, cache={}):
@@ -172,15 +175,18 @@ class solver():
                 queue.update(successor, cost + costCalc(cost_delta, self.cache) + successor.h - state.h)
         return ("",0)
 
-    def dfsid(self, startState, maxDepth=100):
+    def dfsid(self, startState, maxDepth=500):
         i = 1
-        while True:
+        # while True:
+        while i<=maxDepth:
             val = self.dfs(startState, maxDepth=i, cache={})
-            if val is not "":
+            if val[0] is not "":
                 return val
-            elif i < maxDepth:
-                i = i + 1
+            # elif i < maxDepth:
 
+            i = i + 1
+        #Modified for metrics creation
+        return ("",0)
 
     # def astarid(self):
     #     pass
