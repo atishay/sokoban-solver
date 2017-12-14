@@ -1,0 +1,24 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
+\BOOKMARK [1][-]{section.2}{General Game Mechanics}{}% 2
+\BOOKMARK [1][-]{section.3}{Literature Review}{}% 3
+\BOOKMARK [1][-]{section.4}{Scientific Value and Scope}{}% 4
+\BOOKMARK [1][-]{section.5}{States and Modeling}{}% 5
+\BOOKMARK [1][-]{section.6}{Algorithms}{}% 6
+\BOOKMARK [2][-]{subsection.6.1}{Baseline \(Backtracking Algorithm\) and Oracle Implementation}{section.6}% 7
+\BOOKMARK [2][-]{subsection.6.2}{Depth First Search}{section.6}% 8
+\BOOKMARK [2][-]{subsection.6.3}{Depth First Search with Iterative Deepening}{section.6}% 9
+\BOOKMARK [2][-]{subsection.6.4}{Breadth First Search}{section.6}% 10
+\BOOKMARK [2][-]{subsection.6.5}{Uniform cost Search}{section.6}% 11
+\BOOKMARK [2][-]{subsection.6.6}{A* Algorithm}{section.6}% 12
+\BOOKMARK [2][-]{subsection.6.7}{Convolutional Neural Network}{section.6}% 13
+\BOOKMARK [1][-]{section.7}{Pruning Techniques}{}% 14
+\BOOKMARK [2][-]{subsection.7.1}{Move appension}{section.7}% 15
+\BOOKMARK [2][-]{subsection.7.2}{Hashing}{section.7}% 16
+\BOOKMARK [2][-]{subsection.7.3}{Tunnel Macros}{section.7}% 17
+\BOOKMARK [1][-]{section.8}{Results}{}% 18
+\BOOKMARK [1][-]{section.9}{Conclusion}{}% 19
+\BOOKMARK [1][-]{section.10}{Next Steps}{}% 20
+\BOOKMARK [1][-]{section.11}{Reference}{}% 21
+\BOOKMARK [1][-]{section.12}{CodaLab Link}{}% 22
+\BOOKMARK [1][-]{section.13}{Algorithms}{}% 23
+\BOOKMARK [1][-]{section.14}{Glimpse of Solution for Level 3 using A* Algorithm}{}% 24
