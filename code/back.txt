@@ -1,2 +1,0 @@
-magic_sokoban6,1,back,5151.59399414,34,2340
-magic_sokoban6,2,back,2285.09008789,43,1268
