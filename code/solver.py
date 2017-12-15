@@ -90,7 +90,7 @@ class solver():
     def refresh(self):
         self.cache = {}
 
-    def dfs(self, startState, maxDepth, cache={}):
+    def dfs(self, startState, maxDepth=150, cache={}):
         stack = deque([(startState, "")])
         while len(stack) > 0:
             state, actions = stack.pop()
