@@ -1,5 +1,5 @@
 import os
-import gym
+# import gym
 import argparse
 import random
 import time
@@ -19,9 +19,9 @@ from keras.layers.normalization import BatchNormalization
 from keras.layers.core import Activation, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
 from keras.callbacks import ModelCheckpoint
-import matplotlib.pyplot as plt
-import tensorflow as tf
-from keras.backend import tensorflow_backend as K
+# import matplotlib.pyplot as plt
+# import tensorflow as tf
+# from keras.backend import tensorflow_backend as K
 
 #Script Parameters
 dimension = 30
@@ -29,7 +29,7 @@ input_dim = dimension * dimension
 gamma = 0.99
 update_frequency = 10
 learning_rate = 0.001
-resume = True
+resume = False
 data = {}
 number_of_inputs = 4
 
@@ -164,30 +164,35 @@ if __name__ == '__main__':
       y[pos] = 1
       xs.append(x.ravel())
       ys.append(y)
-  checkpointer = ModelCheckpoint(
-      filepath='sokoban_checkpoint.hdf5', verbose=2, save_best_only=True)
+  # checkpointer = ModelCheckpoint(
+  #     filepath='sokoban_checkpoint.hdf5', verbose=2, save_best_only=True)
   history = model.fit(x=np.array(xs), y=np.array(
-      ys), epochs=100, validation_split=0.1, verbose=2, batch_size=128, callbacks=[checkpointer])
+      ys), epochs=100, validation_split=0.1, verbose=2, batch_size=128)
+  print history.history["loss"]
+  print history.history["val_loss"]
+  print history.history["acc"]
+  print history.history["val_acc"]
+
   # list all data in history
-  np.savetxt("loss.txt", np.array(history.history["loss"]), delimiter=",")
-  np.savetxt("val_loss.txt", np.array(history.history["val_loss"]), delimiter=",")
-  np.savetxt("acc.txt", np.array(history.history["acc"]), delimiter=",")
-  np.savetxt("val_acc.txt", np.array(history.history["val_acc"]), delimiter=",")
-  # summarize history for accuracy
-  plt.plot(history.history['acc'])
-  plt.plot(history.history['val_acc'])
-  plt.title('model accuracy')
-  plt.ylabel('accuracy')
-  plt.xlabel('epoch')
-  plt.legend(['train', 'test'], loc='upper left')
-  plt.show()
-  # summarize history for loss
-  plt.plot(history.history['loss'])
-  plt.plot(history.history['val_loss'])
-  plt.title('model loss')
-  plt.ylabel('loss')
-  plt.xlabel('epoch')
-  plt.legend(['train', 'test'], loc='upper left')
-  plt.show()
+  # np.savetxt("loss.txt", np.array(history.history["loss"]), delimiter=",")
+  # np.savetxt("val_loss.txt", np.array(history.history["val_loss"]), delimiter=",")
+  # np.savetxt("acc.txt", np.array(history.history["acc"]), delimiter=",")
+  # np.savetxt("val_acc.txt", np.array(history.history["val_acc"]), delimiter=",")
+  # # summarize history for accuracy
+  # plt.plot(history.history['acc'])
+  # plt.plot(history.history['val_acc'])
+  # plt.title('model accuracy')
+  # plt.ylabel('accuracy')
+  # plt.xlabel('epoch')
+  # plt.legend(['train', 'test'], loc='upper left')
+  # plt.show()
+  # # summarize history for loss
+  # plt.plot(history.history['loss'])
+  # plt.plot(history.history['val_loss'])
+  # plt.title('model loss')
+  # plt.ylabel('loss')
+  # plt.xlabel('epoch')
+  # plt.legend(['train', 'test'], loc='upper left')
+  # plt.show()
 #Predict probabilities from the Keras model
 # aprob = ((model.predict(x.reshape([1, x.shape[0]]), batch_size=1).flatten()))
